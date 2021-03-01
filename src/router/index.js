@@ -1,24 +1,37 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 import Room from '../views/Room.vue'
 import Main from '../views/Main.vue'
+import Login from '../views/Login.vue'
+import Register from '../views/Register.vue'
+import RoomDetail from '../views/RoomDetail.vue'
+import UserInformation from '../views/UserInformation.vue'
+import MyInformation from '../views/MyInformation.vue'
+import MyOrder from '../views/MyOrder.vue'
+import Comments from '../views/Comments.vue'
+
+//以下代码解决路由地址重复的报错问题
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 
 Vue.use(VueRouter)
 
 const routes = [
+  { path: '/', name: 'main', component: Main },
+  { path: '/room', name: 'room', component: Room },
+  { path: '/login', name: 'login', component: Login },
+  { path: '/register', name: 'register', component: Register },
+  { path: '/roomdetail/:id', name: 'roomdetail', component: RoomDetail },
+  { path: '/comments/:id', name: 'comments', component: Comments },
   {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    redirect: 'main',
-    children:
-      [
-        { path: 'main', name: 'main', component: Main },
-        { path: 'room', name: 'room', component: Room },
-      ],
-  }
-
+    path: '/userinformation', name: 'userinformation', component: UserInformation,
+    children: [
+      { path: '/myinformation', name: 'myinformation', component: MyInformation},
+      { path: '/myorder', name: 'myorder', component: MyOrder },
+    ]
+  },
 
 ]
 

@@ -3,9 +3,15 @@ import Vue from 'vue'
 import router from './router'
 
 const http = axios.create({
-    baseURL: 'http://localhost:5500/api/web'
+    baseURL: 'http://localhost:5300/api/web'
 })
 
+http.interceptors.request.use(config=>{
+    if(sessionStorage.token){
+        config.headers.Authoriztion = 'Bearer ' + (sessionStorage.token||' ')
+    }
+    return config
+}, err=>Promise.reject(err))
 
 http.interceptors.response.use(res => {//捕获错误信息
     return res

@@ -13,6 +13,12 @@ import 'swiper/swiper-bundle.css'
 
 Vue.use(VueAwesomeSwiper)
 
+import Footer from './components/Footer.vue'
+Vue.component('my-footer', Footer)//注册全局组件,页尾
+
+import Nav from './components/Nav.vue'
+Vue.component('my-nav', Nav)//导航
+
 Vue.prototype.getNowFormatDate = function () {//获取当前时间
   let date = new Date();
   let seperator1 = "-";
