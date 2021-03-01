@@ -9,7 +9,11 @@ const schema = new mongoose.Schema({
     order_time:{type:String},
     remarks:{type:String},
 
-    room:{type:mongoose.SchemaTypes.ObjectId,ref:'Room'}
+    room:{type:mongoose.SchemaTypes.ObjectId,ref:'Room'},
+    webUser:{type:String},
+    status:{type:String},
+
+
 
 })
 

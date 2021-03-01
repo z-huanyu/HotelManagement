@@ -71,7 +71,7 @@ module.exports = app => {
     const upload = multer({ dest: __dirname + '/../../uploads' })//dest是存储上传文件的位置
     app.post('/api/admin/upload', upload.single('file'), async (req, res) => {//express获取不到上传文件的数据，需要一个中间键multer去处理
         const file = req.file//req.file是upload.single('file')自动挂载file到req上的，前提是有upload.single('file')这段代码，file指客户端上传的文件名，可更改
-        file.url = `http://localhost:5500/uploads/${file.filename}`
+        file.url = `http://localhost:5300/uploads/${file.filename}`
         res.send(file)
     })
 
