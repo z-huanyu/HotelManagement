@@ -22,7 +22,7 @@ const routes = [
     component: Home,
     children: [
       { path: '/room/roomedit', component: RoomEdit},
-      { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},
+      { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},//props接受传值
       { path: '/room/roomlist', component: RoomList },
       
       { path: '/user/useredit', component: User },

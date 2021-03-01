@@ -27,7 +27,7 @@ export default {
     async login(){
       const res = await this.$http.post('login',this.login_form)
       console.log(res.data)
-      sessionStorage.token = res.data
+      sessionStorage.token = res.data//存储token缓存
       this.$router.push('/')
       this.$message({type:'success',message:'登录成功'})
     }
