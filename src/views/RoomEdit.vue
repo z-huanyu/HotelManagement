@@ -18,6 +18,8 @@
               <el-option label="双人间" value="双人间"></el-option>
               <el-option label="三人间" value="三人间"></el-option>
               <el-option label="标准间" value="标准间"></el-option>
+              <el-option label="限时特惠房" value="限时特惠房"></el-option>
+              <el-option label="会员专享房" value="会员专享房"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="房价">
