@@ -51,9 +51,16 @@
           <p>{{i.floor}}</p>
         </div>
         <div class="roomevaluate">
-          <p>评分</p>
-          <p>等级</p>
-          <p>评论数量</p>
+          <p><span class="text-blue">{{i.comment.length>0 ? i.comment[0].generalComment : 0 }}</span>分/5分</p>
+          <p>
+            <el-rate
+                :value="commentValue(i.comment)"
+                disabled
+                score-template="{value}"
+                :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+              >></el-rate>
+          </p>
+          <p>{{i.comment.length}}条评价</p>
         </div>
         <div class="roomprice">
           <p class="text-yellow">
@@ -189,36 +196,8 @@ export default {
         params: { "switch": 1 }
       }); //查询房间列表，后端需要用query接收params
       this.roomlist = res.data;
-
-      // const res2 = await this.$http.get("orderlist");
-      // this.orderlist_number = res2.data.map(item => {
-      //   return item.room.number;
-      // });
-      // console.log(this.orderlist_number);
+      console.log(this.roomlist)
     },
-    // flag(number) {
-    //   //判断是否满房
-    //   for (let item of this.orderlist_number) {
-    //     if (item === number) {
-    //       return true;
-    //     }
-    //   }
-    // },
-    // async submit_form() {
-    //   const res = await this.$http.post("roomorder", this.room_order); // eslint-disable-line no-unused-vars
-    //   // console.log(res);
-    //   // console.log(this.room_order)
-    //   this.dialogVisible = false;
-    //   this.$message({ type: "success", message: "预定成功" });
-    //   this.getroomlist();
-    // },
-    // open(form_data) {
-    //   this.dialogVisible = true;
-    //   //this.room_order = form_data;这样赋值会覆盖room_order里的全部数据
-    //   this.room_order = Object.assign({}, this.room_order);
-    //   this.room_order.room = form_data;
-    //   // console.log(this.room_order);
-    // },
     async floorChange(checkboxGroup2) {
       //筛选不同楼层的房间
       if (checkboxGroup2.length) {
@@ -259,6 +238,9 @@ export default {
     },
     searchInputChange(){//当搜索框值为空，刷新数据
       !this.searchInput_val && this.getroomlist()
+    },
+    commentValue(comment){
+      return comment.length>0 ? comment[0].generalComment : 0
     }
   },
   created() {
@@ -358,12 +340,12 @@ export default {
   text-align: center;
   line-height: 40px;
   border-radius: 5px;
-  border: 1px solid gray;
   background-color: #66b1ff;
+  border: none;
 }
 .TO_roomdetail:hover {
   background-color: #409eff;
   color: white;
-  border: none;
+  cursor: pointer;
 }
 </style>

@@ -6,24 +6,39 @@
 
     <div class="bgc">
       <div class="room_card d-flex flex-wrap jc-between">
-        <p class="fs-xxl w-100">房间详细信息</p>
+        <div class="d-flex w-100 jc-around mb-4 topDiv">
+          <span class="fs-xxl">{{roomdetails.number}}号房</span>
+          <span class="fs-xxl">
+            价格：
+            <i class="text-yellow">
+              <i class="fs-xl">￥</i>
+              {{roomdetails.prices}}
+            </i>
+          </span>
+        </div>
         <div>
-          <img class="room_img" :src="roomdetails.cover" alt />
+          <img ref="bigImage" class="room_img" :src="roomdetails.cover" alt />
         </div>
         <div class="mx-5 d-flex ai-center flex-wrap detial_right">
-          <div class="fs-xxl w-100">{{roomdetails.number}}号房</div>
-          <div class="room_detai_middle w-100">
-            <p>价格：{{roomdetails.prices}}￥</p>
-            <p>房型：{{roomdetails.type}}</p>
-            <p>早餐：{{roomdetails.breakfast}}</p>
-            <p>网络：{{roomdetails.internet}}</p>
-            <p>床大小：{{roomdetails.bedsize}}</p>
-            <p>房间大小：{{roomdetails.roomsize}}</p>
-            <p>窗户：{{roomdetails.window}}</p>
-            <p>可入住：{{roomdetails.people}}</p>
+          <div @click="changeBigImage">
+            <img class="detailImg" :src="roomdetails.cover" alt />
+            <img class="detailImg" :src="roomdetails.img1" alt />
+            <img class="detailImg" :src="roomdetails.img2" alt />
+            <img class="detailImg" :src="roomdetails.img3" alt />
           </div>
-          <div>
-            <el-button class="btn" @click="open()">预订</el-button>
+          <div class="detailInformation">
+            <div class="room_detai_middle w-100 d-flex flex-wrap">
+              <span class="detialSpan">房型：{{roomdetails.type}}</span>
+              <span class="detialSpan">早餐：{{roomdetails.breakfast}}</span>
+              <span class="detialSpan">网络：{{roomdetails.internet}}</span>
+              <span class="detialSpan">床大小：{{roomdetails.bedsize}}</span>
+              <span class="detialSpan">房间大小：{{roomdetails.roomsize}}</span>
+              <span class="detialSpan">窗户：{{roomdetails.window}}</span>
+              <span class="detialSpan">可入住：{{roomdetails.people}}</span>
+            </div>
+            <div>
+              <el-button class="btn" @click="open()">预订</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -194,7 +209,8 @@ export default {
     async getroomdetails() {
       const res = await this.$http.get(`/roomdetails/${this.id}`);
       this.roomdetails = res.data;
-      this.getCommentlist(); //获取评论列表
+      this.commentList = res.data.comment;
+      res.data.comment.length>0 && this.getFinalComment()//当前房间的评价条数大于0，再去统计房间总评价分数
     },
 
     flag(number) {
@@ -218,14 +234,11 @@ export default {
       this.room_order = Object.assign({}, this.room_order);
       this.room_order.room = this.roomdetails;
     },
-    async getCommentlist() {
-      // console.log(this.roomdetails)
-      const res = await this.$http.post("getcommentlist", {
-        commentRoomNumber: this.roomdetails.number
-      });
-      this.commentList = res.data;
 
-      // console.log(this.commentList);
+    changeBigImage(e) {
+      this.$refs.bigImage.src = e.target.src;
+    },
+    getFinalComment() {
       //获取当前房间评论的平均值
       let totolComfortabel = [];
       let totolEquipment = [];
@@ -260,7 +273,8 @@ export default {
     this.id = this.$route.params.id; //接收路由router传值params,也可以利用props接收
     this.id && this.getroomdetails();
   },
-  mounted() {}
+  mounted() {},
+  computed: {}
 };
 </script>
 
@@ -281,13 +295,14 @@ export default {
   height: 400px;
 }
 .room_detai_middle {
-  background-color: #f7f7f7;
+  /* background-color: #f7f7f7; */
 }
 .btn {
   width: 150px;
   height: 40px;
   text-align: center;
   border-radius: 5px;
+  margin-left: 30%;
 }
 .detial_right {
   width: 500px;
@@ -333,5 +348,20 @@ export default {
   position: absolute;
   bottom: 20%;
   color: #8d8d8d;
+}
+.detailImg {
+  width: 200px;
+  height: 100px;
+  margin: 0 10px;
+}
+.detailInformation {
+  height: 50%;
+}
+.detialSpan {
+  width: 50%;
+  margin: 10px 0;
+}
+.topDiv {
+  /* font-weight: 200; */
 }
 </style>

@@ -48,9 +48,9 @@ export default {
       comments: {
         commentDate: this.getNowFormatDate(),
         commentUsername: sessionStorage.username,
-        commentRoomNumber: '',
+        room: '',
         generalComment: '',
-      }
+      },
     };
   },
   methods: {
@@ -61,13 +61,14 @@ export default {
       this.$message({type:'success',message:'发表评论成功'})
       this.$router.push('/myorder')
     },
-    async getCommentRoomNumber() {//根据传值id查询要评论的房间
+    async getcommentRoom() {//根据传值id查询要评论的房间
       const res = await this.$http.get(`/getcommentroom/${this.$route.params.id}`)
-      this.comments.commentRoomNumber = res.data.room.number
-    }
+      this.comments.room = res.data.room._id
+    },
+
   },
   created() {
-      this.getCommentRoomNumber()
+      this.getcommentRoom()
     
   }
 };

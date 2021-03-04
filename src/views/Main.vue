@@ -11,8 +11,14 @@
         <div class="user d-flex jc-center ai-center" ref="userRef">
           <span class="user_span">Hi，{{username}}</span>
           <div class="user_information">
-            <div class="information" @click="$router.push({name:'myinformation',params:{data:'myinformationRef'}});">个人信息</div>
-            <div class="information" @click="$router.push({name:'myorder',params:{data:'myorderRef'}});">我的订单</div>
+            <div
+              class="information"
+              @click="$router.push({name:'myinformation',params:{data:'myinformationRef'}});"
+            >个人信息</div>
+            <div
+              class="information"
+              @click="$router.push({name:'myorder',params:{data:'myorderRef'}});"
+            >我的订单</div>
             <div class="information" @click="offLine">退出</div>
           </div>
         </div>
@@ -55,67 +61,40 @@
       </div>-->
       <ul>
         <p class="fs-xxxl text-center">限时特惠房</p>
-        <li class="discount">
+        <li class="discount" v-for="i in discountRoomList" :key="i._id">
           <div class="d-flex">
             <div class="discount_div">
-              <img class="w-100 h-100 discount_img" src="../assets/images/discount.jpg" alt />
+              <img ref="bigImage0" class="w-100 h-100 discount_img" :src="i.cover" alt />
             </div>
             <div class="ml-5">
-              <p class="fs-xxxl">101号贵宾房</p>
+              <p class="fs-xxxl">{{i.number}}</p>
               <p class="fs-xl text-yellow">
                 ￥
-                <span class="fs-xxxl text-yellow">198.00</span>
+                <span class="fs-xxxl text-yellow">{{i.prices}}</span>
               </p>
-              <p class="fs-xxl text-gray">标准双人床</p>
-              <p class="fs-xl text-gray">地址：啊对哇对哇打底裤袜队</p>
-              <div class="d-flex py-5">
+              <p class="fs-xxl text-gray">{{i.type}}</p>
+              <p class="fs-xl text-gray">{{i.floor}}</p>
+              <div @click="changeBigImage0" class="d-flex py-5">
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.cover" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img1" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img2" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img3" alt />
                 </div>
               </div>
             </div>
           </div>
-          <el-button class="yuding" type="primary">预订</el-button>
-        </li>
-        <li class="discount">
-          <div class="d-flex">
-            <div class="discount_div">
-              <img class="w-100 h-100 discount_img" src="../assets/images/discount.jpg" alt />
-            </div>
-            <div class="ml-5">
-              <p class="fs-xxxl">101号贵宾房</p>
-              <p class="fs-xl text-yellow">
-                ￥
-                <span class="fs-xxxl text-yellow">198.00</span>
-              </p>
-              <p class="fs-xxl text-gray">标准双人床</p>
-              <p class="fs-xl text-gray">地址：啊对哇对哇打底裤袜队</p>
-              <div class="d-flex py-5">
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/discount.jpg" alt />
-                </div>
-              </div>
-            </div>
-          </div>
-          <el-button class="yuding" type="primary">预订</el-button>
+          <el-button
+            class="yuding"
+            type="primary"
+            @click="$router.push(`/roomdetail/${i._id}`)"
+          >查看详情</el-button>
         </li>
       </ul>
     </div>
@@ -123,67 +102,40 @@
     <div class="mt-5 mx-6">
       <ul>
         <p class="fs-xxxl text-center">会员专享房</p>
-        <li class="discount">
+        <li class="discount" v-for="i in memberRoomList" :key="i._id">
           <div class="d-flex">
             <div class="discount_div">
-              <img class="w-100 h-100 discount_img" src="../assets/images/vip.jpg" alt />
+              <img class="w-100 h-100 discount_img" :src="i.cover" alt ref="bigImage" />
             </div>
             <div class="ml-5">
-              <p class="fs-xxxl">101号贵宾房</p>
+              <p class="fs-xxxl">{{i.number}}</p>
               <p class="fs-xl text-yellow">
                 ￥
-                <span class="fs-xxxl text-yellow">198.00</span>
+                <span class="fs-xxxl text-yellow">{{i.prices}}</span>
               </p>
-              <p class="fs-xxl text-gray">标准双人床</p>
-              <p class="fs-xl text-gray">地址：啊对哇对哇打底裤袜队</p>
-              <div class="d-flex py-5">
+              <p class="fs-xxl text-gray">{{i.type}}</p>
+              <p class="fs-xl text-gray">{{i.floor}}</p>
+              <div @click="changeBigImage" class="d-flex py-5">
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.cover" alt/>
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img1" alt/>
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img2" alt/>
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
+                  <img class="little_img my-3 mx-1" :src="i.img3" alt/>
                 </div>
               </div>
             </div>
           </div>
-          <el-button class="yuding" type="primary">预订</el-button>
-        </li>
-        <li class="discount">
-          <div class="d-flex">
-            <div class="discount_div">
-              <img class="w-100 h-100 discount_img" src="../assets/images/vip.jpg" alt />
-            </div>
-            <div class="ml-5">
-              <p class="fs-xxxl">101号贵宾房</p>
-              <p class="fs-xl text-yellow">
-                ￥
-                <span class="fs-xxxl text-yellow">198.00</span>
-              </p>
-              <p class="fs-xxl text-gray">标准双人床</p>
-              <p class="fs-xl text-gray">地址：啊对哇对哇打底裤袜队</p>
-              <div class="d-flex py-5">
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
-                </div>
-                <div>
-                  <img class="little_img my-3 mx-1" src="../assets/images/vip.jpg" alt />
-                </div>
-              </div>
-            </div>
-          </div>
-          <el-button class="yuding" type="primary">预订</el-button>
+          <el-button
+            class="yuding"
+            type="primary"
+            @click="$router.push(`/roomdetail/${i._id}`)"
+          >查看详情</el-button>
         </li>
       </ul>
     </div>
@@ -204,7 +156,9 @@ export default {
         autoplay: true, //开启自动轮播
         loop: true //循环
         // Some Swiper option/callback...
-      }
+      },
+      memberRoomList: [],
+      discountRoomList: [],
     };
   },
   methods: {
@@ -215,13 +169,34 @@ export default {
     offLine() {
       sessionStorage.clear();
       this.$router.go(0);
+    },
+    async getRoomList() {
+      const res = await this.$http.post("roomlist", {
+        type: { $in: ["会员专享房", "限时特惠房"] }
+      });
+      this.memberRoomList = res.data.filter(item => item.type == "会员专享房");
+      this.discountRoomList = res.data.filter(
+        item => item.type == "限时特惠房"
+      );
+      
+    },
+    changeBigImage(e) {//点击小图片切换主图
+      this.$refs.bigImage[0].src = e.target.src
+    },
+    changeBigImage0(e){
+      this.$refs.bigImage0[0].src = e.target.src
     }
+    
   },
   created() {
     this.username = sessionStorage.username;
+    this.getRoomList();
   },
   mounted() {
     sessionStorage.token && this.loginChange();
+  },
+  watch:{
+
   }
   // computed: {
   //   swiper() {
@@ -267,6 +242,7 @@ header {
 .little_img {
   width: 100px;
   height: 100px;
+  cursor: pointer;
 }
 .yuding {
   position: absolute;
@@ -349,10 +325,13 @@ header {
   background-color: #f9f9f9;
   color: #2c85df;
 }
-.user_span{
+.user_span {
   font-size: 18px;
   font-weight: bold;
   color: #ffffff;
+}
+.bg{
+  background-color: #fff;
 }
 </style>
 
