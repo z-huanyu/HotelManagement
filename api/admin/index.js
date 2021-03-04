@@ -6,7 +6,8 @@ module.exports = app => {
     const assert = require('http-assert')
     const jwt = require('jsonwebtoken')
     const router = express.Router({
-        mergeParams: true
+        mergeParams: true,
+        useFindAndModify:true
     })
 
 

@@ -12,7 +12,7 @@ module.exports = app => {
     })
     //获取房间列表
     router.get('/roomlist', async (req, res) => {
-        const model = await Room.find(req.query)//query是前端传参
+        const model = await Room.find(req.query).populate('comment')//query是前端传参
         res.send(model)
     })
     //筛选房间列表
@@ -26,6 +26,11 @@ module.exports = app => {
         const model = await Order.create(req.body)
         res.send(model)
     })
+    //给房间新增评论数据
+    // router.post('/addroomcommnet',authMiddleware(), async (req, res) => {
+    //     const model = await Room.findByIdAndUpdate(req.body)
+    //     res.send(req.body)
+    // })
     //获取用户订单
     router.post('/userorder',authMiddleware(), async (req, res) => {
         const model = await Order.find(req.body).populate('room')//根据id关联查询room
@@ -36,10 +41,20 @@ module.exports = app => {
         const model = await Order.findByIdAndUpdate(req.params.id, req.body)
         res.send(model)
     })
+    //发起用户订单换房请求
+    router.put('/changeroom/:id', authMiddleware(), async (req, res) => {
+        const model = await Order.findByIdAndUpdate(req.params.id, req.body)
+        res.send(model)
+    })
     //用户发表评论
     router.post('/comment', authMiddleware(), async (req, res) => {
         const model = await Comment.create(req.body)
-        res.send(model)
+        //给房间添加评论信息
+        const backMessage = await Room.findById(req.body.room)
+        let comments = backMessage.comment
+        comments.push(model._id)
+        const endResult = await Room.findByIdAndUpdate(req.body.room,{comment:comments})
+        res.send(endResult)
     })
     //根据id查询要评价的房间信息/订单信息
     router.get('/getcommentroom/:id', authMiddleware(), async (req, res) => {
@@ -58,7 +73,7 @@ module.exports = app => {
     })
     //获取指定房间信息
     router.get('/roomdetails/:id', async (req, res) => {
-        const model = await Room.findById(req.params.id)
+        const model = await Room.findById(req.params.id).populate('comment')
         res.send(model)
     })
     //用户注册

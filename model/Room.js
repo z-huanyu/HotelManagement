@@ -19,6 +19,7 @@ const schema = new mongoose.Schema({
     img1:{type:String},
     img2:{type:String},
     img3:{type:String},
+    comment:[{type:mongoose.SchemaTypes.ObjectId,ref:'Comment'}]
 })
 
 module.exports = mongoose.model('Room', schema)
