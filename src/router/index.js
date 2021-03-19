@@ -5,8 +5,11 @@ import RoomList from '../views/RoomList.vue'
 import RoomEdit from '../views/RoomEdit.vue'
 import Login from '../views/Login.vue'
 import User from '../views/User.vue'
-import UserList from '../views/UserList.vue'
+import WebUser from '../views/WebUser.vue'
 import UserOrder from '../views/UserOrder.vue'
+import Comment from '../views/Comment.vue'
+import Statistics from '../views/Statistics.vue'
+import AddRoomType from '../views/AddRoomType.vue'
 
 Vue.use(VueRouter)
 
@@ -24,11 +27,17 @@ const routes = [
       { path: '/room/roomedit', component: RoomEdit},
       { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},//props接受传值
       { path: '/room/roomlist', component: RoomList },
+      { path: '/room/addroomtype', component: AddRoomType },
       
       { path: '/user/useredit', component: User },
-      { path: '/user/userlist', component: UserList },
+      { path: '/user/webUser', component: WebUser },
 
       { path: '/order/userorder', component: UserOrder },
+
+      { path: '/comment/commentlist', component: Comment },
+
+      { path: '/statistics/statisticstable', component: Statistics },
+      
     ]
     
   }

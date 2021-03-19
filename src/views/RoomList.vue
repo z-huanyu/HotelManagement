@@ -38,10 +38,10 @@
             <el-tag>{{i.status}}</el-tag>
           </el-col>
           <el-col :span="8">
-            <el-tag>{{i.type}}</el-tag>
+            <el-tag>{{i.typeID.roomType}}</el-tag>
           </el-col>
           <el-col :span="8">
-            <el-tag>{{i.floor}}</el-tag>
+            <el-tag>{{i.floorID.roomFloor}}</el-tag>
           </el-col>
         </el-row>
         <el-row style="margin:10px 0">
@@ -64,6 +64,7 @@ export default {
     async getroomlist() {
       const res = await this.$http.get("rest/rooms"); // eslint-disable-line no-unused-vars
       this.roomlist = res.data;
+      console.log(this.roomlist)
     },
     async roomdelete(id) {
       const res = await this.$http.delete(`rest/rooms/${id}`); // eslint-disable-line no-unused-vars
@@ -92,19 +93,21 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .UsersCard {
   width: 100%;
   height: 100%;
 }
 .list {
   display: inline-block;
-  width: 200px;
+  width: 250px;
   height: 130px;
   margin-right: 10px;
+  margin-top: 10px;
   border-radius: 30px;
   cursor: pointer;
   text-align: center;
+  box-shadow: 3px 5px 10px #c8c8c8;
 }
 .inactive_bgc {
   background-color: #dcdfe6;

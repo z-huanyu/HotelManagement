@@ -27,17 +27,11 @@
               <el-form-item label="预计到达时间">
                 <span>{{ scope.row.arrivetime }}</span>
               </el-form-item>
-              <el-form-item label="房间号">
-                <span>{{ scope.row.room.number}}</span>
-              </el-form-item>
               <el-form-item label="早餐">
-                <span>{{ scope.row.room.breakfast}}</span>
-              </el-form-item>
-              <el-form-item label="房价">
-                <span>¥{{ scope.row.room.prices}}</span>
+                <span>{{ scope.row.roomID.breakfast}}</span>
               </el-form-item>
               <el-form-item label="房型">
-                <span>{{ scope.row.room.type}}</span>
+                <span>{{ scope.row.roomID.type}}</span>
               </el-form-item>
               <el-form-item label="备注">
                 <span>{{ scope.row.remarks}}</span>
@@ -46,7 +40,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="_id" label="订单号" width="210"></el-table-column>
-        <el-table-column prop="username" label="用户名" width="80"></el-table-column>
+        <el-table-column prop="room.number" label="房间号" width="100"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="100"></el-table-column>
         <el-table-column prop="order_time" label="下单时间" width="180"></el-table-column>
         <el-table-column label="状态" width="180">
           <template slot-scope="scope">
@@ -54,10 +49,15 @@
             <el-tag type="success">已付款</el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="订单金额" width="180">
+          <template slot-scope="scope">
+            <span class="pricesColor">￥{{scope.row.room.prices}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <!-- <el-button size="mini">编辑</el-button> -->
-            <el-button size="mini" @click="checkin(scope.row)">入住</el-button>
+            <el-button size="mini" @click="checkin(scope.row)">确认入住</el-button>
             <el-button size="mini" @click="changeroom(scope.row)">换房</el-button>
             <el-button size="mini" @click="checkoutroom(scope.row)">退房</el-button>
             <el-button size="mini" @click="ordersdelete(scope.row._id)">删除</el-button>
@@ -103,6 +103,7 @@ export default {
       //获取订单数据
       const res = await this.$http.get("rest/orders");
       this.orderlist = res.data;
+      console.log(this.orderlist)
     },
     async ordersdelete(id) {
       //删除订单
@@ -161,7 +162,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .UsersCard {
   width: 100%;
   height: 100%;
@@ -178,5 +179,8 @@ export default {
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+.pricesColor{
+  color: #fe7f00;
 }
 </style>

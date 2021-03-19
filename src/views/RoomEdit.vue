@@ -5,31 +5,23 @@
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>{{id ? '编辑' : '新建'}}房间</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-card style="width:100%">
+    <el-card>
       <el-form label-width="100px" @submit.native.prevent="save" size="small" :inline="true">
         <el-divider>基础信息</el-divider>
         <el-row>
+          <el-form-item label="房间名称">
+            <el-input v-model="room.name"></el-input>
+          </el-form-item>
           <el-form-item label="房间号">
             <el-input v-model="room.number"></el-input>
           </el-form-item>
           <el-form-item label="房间类型">
-            <el-select v-model="room.type" placeholder="请选择房间类型">
-              <el-option label="单人间" value="单人间"></el-option>
-              <el-option label="双人间" value="双人间"></el-option>
-              <el-option label="三人间" value="三人间"></el-option>
-              <el-option label="标准间" value="标准间"></el-option>
-              <el-option label="限时特惠房" value="限时特惠房"></el-option>
-              <el-option label="会员专享房" value="会员专享房"></el-option>
+            <el-select v-model="room.typeID" placeholder="请选择房间类型">
+              <el-option v-for="i in  roomType" :key="i._id" :label="i.roomType" :value="i._id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="房价">
             <el-input v-model="room.prices"></el-input>
-          </el-form-item>
-          <el-form-item label="早餐">
-            <el-select v-model="room.breakfast" placeholder="请选择是否含早餐">
-              <el-option label="有" value="有"></el-option>
-              <el-option label="无" value="无"></el-option>
-            </el-select>
           </el-form-item>
         </el-row>
         <el-row>
@@ -82,31 +74,43 @@
         </el-row>
         <el-divider>详细信息</el-divider>
         <el-form-item label="上网方式">
-          <el-input v-model="room.internet"></el-input>
+          <el-select v-model="room.internet" placeholder="请选择上网方式">
+            <el-option label="酒店wifi" value="酒店wifi"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="床尺寸">
-          <el-input v-model="room.bedsize"></el-input>
+          <el-select v-model="room.bedsize" placeholder="请选择床尺寸">
+            <el-option label="1.2m*1.8m" value="1.2m*1.8m"></el-option>
+            <el-option label="1.5m*2m" value="1.5m*2m"></el-option>
+            <el-option label="1.8m*2m" value="1.8m*2m"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="房间大小">
-          <el-input v-model="room.roomsize"></el-input>
+        
+            <el-select v-model="room.roomsize" placeholder="请选择房间大小">
+            <el-option label="10-20平方米" value="10-20平方米"></el-option>
+            <el-option label="20-30平方米" value="20-30平方米"></el-option>
+            <el-option label="30-40平方米" value="30-40平方米"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="楼层">
-          <el-select v-model="room.floor" placeholder="请选择楼层">
-            <el-option label="一楼" value="一楼"></el-option>
-            <el-option label="二楼" value="二楼"></el-option>
-            <el-option label="三楼" value="三楼"></el-option>
-            <el-option label="四楼" value="四楼"></el-option>
+          <el-select v-model="room.floorID" placeholder="请选择楼层">
+            <el-option v-for="i in roomFloor" :key="i._id" :label="i.roomFloor" :value="i._id"></el-option>
           </el-select>
         </el-form-item>
         <el-row>
+          <el-form-item label="早餐">
+            <el-select v-model="room.breakfast" placeholder="请选择是否含早餐">
+              <el-option label="有" value="有"></el-option>
+              <el-option label="无" value="无"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="窗户">
             <el-radio-group v-model="room.window">
               <el-radio label="有窗" value="true"></el-radio>
               <el-radio label="无窗" value="false"></el-radio>
             </el-radio-group>
           </el-form-item>
-        </el-row>
-        <el-row>
           <el-form-item label="可入住人数">
             <el-radio-group v-model="room.people">
               <el-radio label="一人"></el-radio>
@@ -122,6 +126,8 @@
             </el-radio-group>
           </el-form-item>
         </el-row>
+        
+        
         <el-row type="flex" justify="center">
           <el-form-item style="margin-top:1rem">
             <el-button size="medium" type="primary" native-type="submit">保存</el-button>
@@ -148,7 +154,9 @@ export default {
         pictureUrl: [] //图片url
       },
       dialogImageUrl: "",
-      dialogVisible: false
+      dialogVisible: false,
+      roomType: [],
+      roomFloor: []
     };
   },
   methods: {
@@ -167,7 +175,6 @@ export default {
     cover_afterUpload(res) {
       //上传图片成功后把图片url地址赋值
       this.room.cover = res.url;
-      console.log(res);
     },
     img1_afterUpload(res) {
       //上传图片成功后把图片url地址赋值
@@ -177,7 +184,6 @@ export default {
     img2_afterUpload(res) {
       //上传图片成功后把图片url地址赋值
       this.room.img2 = res.url;
-      console.log(res);
     },
     img3_afterUpload(res) {
       //上传图片成功后把图片url地址赋值
@@ -187,7 +193,6 @@ export default {
     async getroomlist() {
       const res = await this.$http.get(`rest/rooms/${this.id}`);
       this.room = res.data;
-      console.log(this.room);
     },
     handleRemove(file) {
       let removeIndex = this.room.pictureUrl.findIndex(
@@ -198,36 +203,48 @@ export default {
     handlePictureCardPreview(file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
+    },
+    async getRoomType() {
+      const res = await this.$http.get("rest/categories");
+      this.roomType = res.data;
+    },
+    async getRoomFloor() {
+      const res = await this.$http.get("rest/floors");
+      this.roomFloor = res.data;
     }
   },
   created() {
     this.id && this.getroomlist(); //&&前面的条件满足后再执行后面的方法
+    this.getRoomType();
+    this.getRoomFloor();
   }
 };
 </script>
 
-<style>
-.avatar-uploader .el-upload {
+<style scoped>
+.avatar-uploader {
+  width: 100px;
+  height: 100px;
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
   cursor: pointer;
   position: relative;
   overflow: hidden;
 }
-.avatar-uploader .el-upload:hover {
+.avatar-uploader:hover {
   border-color: #409eff;
 }
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
-  width: 5rem;
-  height: 5rem;
-  line-height: 5rem;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
   text-align: center;
 }
 .avatar {
-  width: 5rem;
-  height: 5rem;
+  width: 100px;
+  height: 100px;
   display: block;
 }
 </style>

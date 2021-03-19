@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card header="请先登录">
+    <el-card class="loginDiv" header="请先登录">
       <el-form label-position="left" label-width="80px" @submit.native.prevent="login">
           <el-form-item label="用户名">
             <el-input clearable v-model="login_form.username" type="text" prefix-icon="el-icon-user-solid"></el-input>
@@ -26,8 +26,8 @@ export default {
   methods:{
     async login(){
       const res = await this.$http.post('login',this.login_form)
-      console.log(res.data)
-      sessionStorage.token = res.data//存储token缓存
+      sessionStorage.token = res.data.token//存储token缓存
+      sessionStorage.userInformation = JSON.stringify(res.data.userInformation)
       this.$router.push('/')
       this.$message({type:'success',message:'登录成功'})
     }
@@ -35,8 +35,8 @@ export default {
 };
 </script>
 
-<style>
-.el-card {
+<style scoped>
+.loginDiv {
   width: 25rem;
   margin: 5rem auto;
 }
