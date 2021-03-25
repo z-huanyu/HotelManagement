@@ -30,28 +30,30 @@
               <el-form-item label="早餐">
                 <span>{{ scope.row.roomID.breakfast}}</span>
               </el-form-item>
-              <el-form-item label="房型">
-                <span>{{ scope.row.roomID.type}}</span>
-              </el-form-item>
               <el-form-item label="备注">
                 <span>{{ scope.row.remarks}}</span>
               </el-form-item>
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column prop="_id" label="订单号" width="210"></el-table-column>
-        <el-table-column prop="room.number" label="房间号" width="100"></el-table-column>
+        <el-table-column prop="_id" label="订单号" width="220"></el-table-column>
+        <el-table-column prop="roomID.name" label="房名称" width="100"></el-table-column>
+        <el-table-column prop="roomID.number" label="房间号" width="100"></el-table-column>
         <el-table-column prop="username" label="用户名" width="100"></el-table-column>
         <el-table-column prop="order_time" label="下单时间" width="180"></el-table-column>
-        <el-table-column label="状态" width="180">
+        <el-table-column label="状态" width="100">
           <template slot-scope="scope">
             <el-tag :type="status_tagtype(scope.row.status)">{{scope.row.status}}</el-tag>
-            <el-tag type="success">已付款</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="订单金额" width="180">
+        <el-table-column label="实付金额" width="100">
           <template slot-scope="scope">
-            <span class="pricesColor">￥{{scope.row.room.prices}}</span>
+            <span class="pricesColor">￥{{scope.row.paid}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="优惠金额" width="100">
+          <template slot-scope="scope">
+            <span class="pricesColor">￥{{scope.row.discountPaid}}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -59,6 +61,7 @@
             <!-- <el-button size="mini">编辑</el-button> -->
             <el-button size="mini" @click="checkin(scope.row)">确认入住</el-button>
             <el-button size="mini" @click="changeroom(scope.row)">换房</el-button>
+            <el-button size="mini" @click="cleanroom(scope.row)">打扫</el-button>
             <el-button size="mini" @click="checkoutroom(scope.row)">退房</el-button>
             <el-button size="mini" @click="ordersdelete(scope.row._id)">删除</el-button>
           </template>
@@ -90,12 +93,11 @@
 export default {
   data() {
     return {
-      order:{},//当前点击订单
+      order: {}, //当前点击订单
       orderlist: [], //订单列表
       changeroomdialogVisible: false,
       changeRoomList: [], //可换房间列表
-      changeRoomForm: {},
-
+      changeRoomForm: {}
     };
   },
   methods: {
@@ -103,7 +105,7 @@ export default {
       //获取订单数据
       const res = await this.$http.get("rest/orders");
       this.orderlist = res.data;
-      console.log(this.orderlist)
+      console.log(this.orderlist);
     },
     async ordersdelete(id) {
       //删除订单
@@ -113,20 +115,36 @@ export default {
     },
     async checkin(row) {
       //入住操作
-      await this.$http.put(`rest/rooms/${row.room._id}`, {// eslint-disable-line no-unused-vars
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "满房",
+        switch:'0'
+      });
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
         status: "已入住"
       });
-      await this.$http.put(`rest/orders/${row._id}`, {// eslint-disable-line no-unused-vars
-        status: "已入住"
-      });    
+      this.getorderlist();
+    },
+    async cleanroom(row) {
+      //入住操作
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "打扫中",
+        switch:'0'
+      });
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "打扫中"
+      });
       this.getorderlist();
     },
     async changeroom(row) {
-      this.order = row
-      const res = await this.$http.get('rest/rooms')
-      this.changeRoomList = res.data.filter(item => item.status == '待入住')
-      this.changeroomdialogVisible = true
-      this.getorderlist()
+      this.order = row;
+      const res = await this.$http.get("rest/rooms");
+      this.changeRoomList = res.data.filter(item => item.status == "空闲");
+      this.changeroomdialogVisible = true;
+      this.getorderlist();
     },
     status_tagtype(status) {
       //根据订单状态改变tag标签样式
@@ -137,20 +155,29 @@ export default {
       }
     },
     async changeroom_submit() {
-        await this.$http.put(`rest/orders/${this.order._id}`,{room:this.changeRoomForm.roomID})
-        await this.$http.put(`rest/rooms/${this.order.room._id}`,{status:'待入住'})
-        // const res = await this.$http.put(`rest/rooms/${this.changeRoomForm.roomID}`,{status:'已入住'})
-        this.changeroomdialogVisible =false
+      await this.$http.put(`rest/orders/${this.order._id}`, {
+        roomID: this.changeRoomForm.roomID
+      });
+      await this.$http.put(`rest/rooms/${this.order.roomID._id}`, {
+        status: "空闲"
+      });
+      this.getorderlist()
+      this.changeroomdialogVisible = false;
     },
     getselectID($event) {
-      this.changeRoomForm.roomID = this.changeRoomList.filter(item =>item.number == $event)[0]._id
+      this.changeRoomForm.roomID = this.changeRoomList.filter(
+        item => item.number == $event
+      )[0]._id;
     },
     async checkoutroom(row) {
       //退房操作
-      await this.$http.put(`rest/rooms/${row.room._id}`, {// eslint-disable-line no-unused-vars
-        status: "待入住"
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "空闲",
+        switch: '1'
       });
-      await this.$http.put(`rest/orders/${row._id}`, {// eslint-disable-line no-unused-vars
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
         status: "订单完成"
       });
       this.getorderlist();
@@ -180,7 +207,7 @@ export default {
   margin-bottom: 0;
   width: 50%;
 }
-.pricesColor{
+.pricesColor {
   color: #fe7f00;
 }
 </style>

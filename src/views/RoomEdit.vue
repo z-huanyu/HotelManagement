@@ -150,7 +150,7 @@ export default {
         img1: "",
         img2: "",
         img3: "",
-        status: "待入住",
+        status: "空闲",
         pictureUrl: [] //图片url
       },
       dialogImageUrl: "",

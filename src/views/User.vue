@@ -123,18 +123,19 @@
 </template>
 
 <script>
-let editer = JSON.parse(sessionStorage.userInformation).username;
+let editer =  sessionStorage.username
+// let editer = JSON.parse(sessionStorage.userInformation).username;
 export default {
   data() {
     return {
       usersform: {
-        editer: '',//编辑者
+        editer: editer,//编辑者
       },
       dialogFormVisible: false,
       userslist: [],
       searchInput_val: "",
       changeUserForm: {
-        editer: '',//编辑者
+        editer: editer,//编辑者
       }, //修改管理员数据
       changeDialogFormVisible: false
     };
@@ -207,14 +208,12 @@ export default {
       );
       this.changeDialogFormVisible = false;
     },
-    getUserInformation() {
-      this.usersform.editer = editer;
-    }
+    
   },
 
   created() {
     this.getuserslist();
-    this.getUserInformation()
+
   }
 };
 </script>

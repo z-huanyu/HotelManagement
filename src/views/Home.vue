@@ -4,7 +4,7 @@
       <el-header style="text-align: right; font-size: 12px" height="70px">
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
-            欢迎回来 ，{{userInformation.username}}
+            欢迎回来 ，{{username}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -35,7 +35,7 @@
                 <el-menu-item index="/order/userorder">用户订单</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="3">
+            <el-submenu index="3" v-if="flag()">
               <template slot="title">
                 <i class="el-icon-message"></i>系统管理
               </template>
@@ -44,7 +44,7 @@
                 <el-menu-item index="/user/webUser">用户</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="4">
+            <el-submenu index="4" v-if="flag()">
               <template slot="title">
                 <i class="el-icon-message"></i>评论管理
               </template>
@@ -52,7 +52,7 @@
                 <el-menu-item index="/comment/commentlist">评论列表</el-menu-item>
               </el-menu-item-group>
             </el-submenu>
-            <el-submenu index="5">
+            <el-submenu index="5" v-if="flag()">
               <template slot="title">
                 <i class="el-icon-message"></i>统计
               </template>
@@ -77,7 +77,7 @@
 export default {
   data() {
     return {
-      userInformation: {}
+      username: '',
     };
   },
   methods: {
@@ -88,11 +88,18 @@ export default {
       } else {
         return;
       }
+    },
+    flag(){//根据level权限控制页面显示
+      if(sessionStorage.level == '2'){
+        return true
+      }else{
+        return false
+      }
     }
   },
   created() {
-    if (sessionStorage.userInformation) {
-      this.userInformation = JSON.parse(sessionStorage.userInformation);
+    if (sessionStorage.username) {
+      this.username = sessionStorage.username;
     }
   }
 };

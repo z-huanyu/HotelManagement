@@ -64,7 +64,7 @@ export default {
     async getroomlist() {
       const res = await this.$http.get("rest/rooms"); // eslint-disable-line no-unused-vars
       this.roomlist = res.data;
-      console.log(this.roomlist)
+      // console.log(this.roomlist)
     },
     async roomdelete(id) {
       const res = await this.$http.delete(`rest/rooms/${id}`); // eslint-disable-line no-unused-vars

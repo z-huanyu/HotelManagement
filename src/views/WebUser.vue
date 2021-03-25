@@ -132,7 +132,8 @@
 </template>
 
 <script>
-let editer = JSON.parse(sessionStorage.userInformation).username;
+let editer = sessionStorage.username
+// let editer = JSON.parse(sessionStorage.userInformation).username;
 export default {
   data() {
     return {

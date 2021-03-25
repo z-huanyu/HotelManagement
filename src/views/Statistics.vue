@@ -17,6 +17,7 @@ let resultData = [];
 export default {
   data() {
     return {
+      typeData:[],
       typeOptions: {
         title: {
           text: "房型热度"
@@ -26,7 +27,7 @@ export default {
           data: ["销量"]
         },
         xAxis: {
-          data: ["单人间", "双人间", "三人间", "限时特惠房", "会员专享房"]
+          data: []
         },
         yAxis: {},
         series: [
@@ -50,28 +51,28 @@ export default {
             // radius: "55%",
             data: [
               {
-                value: 111,
+                value: 1,
                 name: "服务态度",
                 itemStyle: {
                   color: "#5c7bd9"
                 }
               },
               {
-                value: 222,
+                value: 5,
                 name: "设备设施",
                 itemStyle: {
                   color: "#9fe080"
                 }
               },
               {
-                value: 222,
+                value: 2,
                 name: "舒适程度",
                 itemStyle: {
                   color: "#fdd55d"
                 }
               },
               {
-                value: 222,
+                value: 3,
                 name: "环境卫生",
                 itemStyle: {
                   color: "#ff7070"
@@ -87,27 +88,32 @@ export default {
     async getdata() {
       const res = await this.$http.get("rest/orders");
 
-      const getdatafn = type => {
+      const getdatafn = typeID => {
         return res.data.filter(item => {
-          return item.room.type == type;
+          return item.roomID.typeID == typeID;
         }).length;
       };
-      resultData.push(
-        getdatafn("单人间"),
-        getdatafn("双人间"),
-        getdatafn("三人间"),
-        getdatafn("限时特惠房"),
-        getdatafn("会员专享房")
-      );
+      this.typeData.forEach(item=>{
+        resultData.push(getdatafn(item._id))
+      })
       // this.options.series[0].data = [...data]
+    },
+    async getType(){
+      const res =await this.$http.get('rest/categories')
+      this.typeData = res.data
+      res.data.forEach(item=>{
+        this.typeOptions.xAxis.data.push(item.roomType)
+      })
     }
   },
-  created() {},
+  created() {
+  },
   async mounted() {
     // 基于准备好的dom，初始化echarts实例
     var typeChart = echarts.init(document.getElementById("type"));
     var commentChart = echarts.init(document.getElementById("comment"));
     //等待返回数据后再展示数据
+    await this.getType()
     await this.getdata();
     //展示数据
     typeChart.setOption(this.typeOptions);

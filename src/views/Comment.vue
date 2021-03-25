@@ -26,7 +26,7 @@
 
       <el-divider content-position="left">评论列表</el-divider>
       <el-table :data="commentList" style="width: 100%">
-        <el-table-column prop="room.number" label="房间号" width="180"></el-table-column>
+        <el-table-column prop="roomID.number" label="房间号" width="180"></el-table-column>
         <el-table-column prop="commentUsername" label="评论人" width="180"></el-table-column>
         <el-table-column prop="commentDate" label="评论时间" width="180"></el-table-column>
         <el-table-column prop="commentText" label="内容" width="280"></el-table-column>
