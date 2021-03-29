@@ -182,7 +182,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .UsersCard {
   width: 100%;
   height: 100%;

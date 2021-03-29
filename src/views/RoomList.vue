@@ -9,10 +9,11 @@
     <el-card class="UsersCard">
       <!-- 表格 -->
       <el-table :data="roomlist" style="width: 100%">
+        <el-table-column prop="name" label="房间名称" width="180"></el-table-column>
         <el-table-column prop="number" label="房间号" width="180"></el-table-column>
-        <el-table-column prop="type" label="房型" width="180"></el-table-column>
+        <el-table-column prop="typeID.roomType" label="房型" width="180"></el-table-column>
+        <el-table-column prop="floorID.roomFloor" label="楼层" width="180"></el-table-column>
         <el-table-column prop="prices" label="房价" width="180"></el-table-column>
-        <el-table-column prop="breakfast" label="早餐" width="180"></el-table-column>
         <el-table-column prop="cover" label="房间封面" width="180">
           <template slot-scope="scope">
             <img :src="scope.row.cover" alt="404" style="height:3rem">
@@ -65,7 +66,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .UsersCard {
   width: 100%;
   height: 100%;
