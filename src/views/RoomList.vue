@@ -9,19 +9,29 @@
     <el-card class="UsersCard">
       <!-- 表格 -->
       <el-table :data="roomlist" style="width: 100%">
-        <el-table-column prop="name" label="房间名称" width="180"></el-table-column>
-        <el-table-column prop="number" label="房间号" width="180"></el-table-column>
-        <el-table-column prop="typeID.roomType" label="房型" width="180"></el-table-column>
-        <el-table-column prop="floorID.roomFloor" label="楼层" width="180"></el-table-column>
-        <el-table-column prop="prices" label="房价" width="180"></el-table-column>
-        <el-table-column prop="cover" label="房间封面" width="180">
+        <el-table-column prop="name" label="房间名称" width="100"></el-table-column>
+        <el-table-column prop="number" label="房间号" width="100"></el-table-column>
+        <el-table-column prop="typeID.roomType" label="房型" width="100"></el-table-column>
+        <el-table-column prop="floorID.roomFloor" label="楼层" width="100"></el-table-column>
+        <el-table-column prop="prices" label="房价" width="100"></el-table-column>
+        <el-table-column prop="cover" label="房间封面" width="100">
           <template slot-scope="scope">
-            <img :src="scope.row.cover" alt="404" style="height:3rem">
+            <img :src="scope.row.cover" alt="404" style="height:3rem" />
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="房间状态" width="180">
+        <el-table-column prop="status" label="房间状态" width="100">
           <template slot-scope="scope">
             <el-tag :type="tag_type_change(scope.row.status)">{{scope.row.status}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="switch" label="冻结/开启" width="100">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.switch"
+              active-value="1"
+              inactive-value="0"
+              @change="roomSwitchChange($event,scope.row._id)"
+            >></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -48,16 +58,21 @@ export default {
       this.roomlist = res.data;
     },
     async roomdelete(id) {
-      const res = await this.$http.delete(`rest/rooms/${id}`);// eslint-disable-line no-unused-vars
-      this.$message({ type: "success", message: "删除成功" });//后端得返回数据，不然会一直等待后端响应，阻塞弹窗
+      const res = await this.$http.delete(`rest/rooms/${id}`); // eslint-disable-line no-unused-vars
+      this.$message({ type: "success", message: "删除成功" }); //后端得返回数据，不然会一直等待后端响应，阻塞弹窗
       this.getroomlist();
     },
-    tag_type_change(status){
-      if(status==='已入住'){
-        return 'info'
-      }else{
-        return 'success'
+    tag_type_change(status) {
+      if (status === "已入住") {
+        return "info";
+      } else {
+        return "success";
       }
+    },
+    async roomSwitchChange($event, id) {
+      await this.$http.put(`rest/rooms/${id}`,{
+        switch: $event
+      })
     }
   },
   created() {

@@ -4,8 +4,8 @@ import Home from '../views/Home.vue'
 import RoomList from '../views/RoomList.vue'
 import RoomEdit from '../views/RoomEdit.vue'
 import Login from '../views/Login.vue'
-import User from '../views/User.vue'
-import UserList from '../views/UserList.vue'
+import WebUser from '../views/WebUser.vue'
+import Role from '../views/Role.vue'
 import UserOrder from '../views/UserOrder.vue'
 
 Vue.use(VueRouter)
@@ -25,8 +25,8 @@ const routes = [
       { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},
       { path: '/room/roomlist', component: RoomList },
       
-      { path: '/user/useredit', component: User },
-      { path: '/user/userlist', component: UserList },
+      { path: '/user/webuser', component: WebUser },
+      { path: '/user/role', component: Role },
 
       { path: '/order/userorder', component: UserOrder },
     ]

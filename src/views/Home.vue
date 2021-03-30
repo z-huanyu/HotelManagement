@@ -2,14 +2,17 @@
   <div>
     <el-container style="height: 100vh;">
       <el-header style="text-align: right; font-size: 12px" height="70px">
-        <el-dropdown>
-          <i class="el-icon-setting" style="margin-right: 15px"></i>
+        <el-dropdown @command="handelCommand">
+          <span class="el-dropdown-link">
+            
+            欢迎回来，{{username}}
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>个人信息</el-dropdown-item>
-            <el-dropdown-item>退出</el-dropdown-item>
+            <el-dropdown-item command="information">个人信息</el-dropdown-item>
+            <el-dropdown-item command="offLine">退出</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <span>张三</span>
       </el-header>
       <el-container>
         <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
@@ -31,8 +34,8 @@
               <template slot="title">
                 <i class="el-icon-message"></i>系统管理
               </template>
-              <el-menu-item index="/user/useredit">管理员</el-menu-item>
-              <el-menu-item index="/user/userlist">管理员列表</el-menu-item>
+              <el-menu-item index="/user/webuser">用户管理</el-menu-item>
+              <el-menu-item index="/user/role">角色管理</el-menu-item>
             </el-submenu>
           </el-menu>
         </el-aside>
@@ -48,7 +51,21 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data(){
+    return{
+      username: sessionStorage.username
+    }
+  },
+  methods:{
+    handelCommand(command){
+      if(command == 'offLine'){
+        sessionStorage.clear()
+        this.$router.push('/login')
+      }
+    }
+  }
+};
 </script>
 
 <style>
@@ -61,7 +78,11 @@ export default {};
 .el-aside {
   color: #ffd04b;
 }
-.el-card{
+.el-card {
   margin: 10px 0;
+}
+.el-dropdown-link{
+  color: #409eff;
+  cursor: pointer;
 }
 </style>

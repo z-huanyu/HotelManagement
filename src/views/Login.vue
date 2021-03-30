@@ -27,6 +27,9 @@ export default {
     async login(){
       const res = await this.$http.post('login',this.login_form)
       sessionStorage.token = res.data.token
+      sessionStorage.editer = res.data.userInformation.editer
+      sessionStorage.level = res.data.userInformation.level
+      sessionStorage.username = res.data.userInformation.username
       this.$router.push('/')
       this.$message({type:'success',message:'登录成功'})
     }
