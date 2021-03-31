@@ -15,6 +15,9 @@
           <el-form-item label="房间号">
             <el-input v-model="room.number"></el-input>
           </el-form-item>
+            <el-form-item label="房间价格">
+            <el-input v-model="room.prices"></el-input>
+          </el-form-item>
           <el-form-item label="房间类型">
             <el-select v-model="room.typeID" placeholder="请选择房型">
               <el-option
@@ -25,16 +28,7 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="楼层">
-            <el-select v-model="room.floorID" placeholder="请选择楼层">
-              <el-option
-                v-for="item in roomFloor"
-                :key="item._id"
-                :label="item.roomFloor"
-                :value="item._id"
-              ></el-option>
-            </el-select>
-          </el-form-item>
+        
         </el-row>
         <el-row>
           <el-form-item label="房间封面">
@@ -80,6 +74,16 @@
               <img v-if="room.img3" :src="room.img3" class="avatar" />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
+          </el-form-item>
+            <el-form-item label="楼层">
+            <el-select v-model="room.floorID" placeholder="请选择楼层">
+              <el-option
+                v-for="item in roomFloor"
+                :key="item._id"
+                :label="item.roomFloor"
+                :value="item._id"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-row>
 
@@ -208,7 +212,9 @@ export default {
 </script>
 
 <style scoped>
-.avatar-uploader .el-upload {
+.avatar-uploader {
+  width: 5rem;
+  height: 5rem;
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
   cursor: pointer;

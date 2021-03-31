@@ -7,6 +7,8 @@ import Login from '../views/Login.vue'
 import WebUser from '../views/WebUser.vue'
 import Role from '../views/Role.vue'
 import UserOrder from '../views/UserOrder.vue'
+import AddRoomTypeFloor from '../views/AddRoomTypeFloor.vue'
+import CommentList from '../views/CommentList.vue'
 
 Vue.use(VueRouter)
 
@@ -24,11 +26,14 @@ const routes = [
       { path: '/room/roomedit', component: RoomEdit},
       { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},
       { path: '/room/roomlist', component: RoomList },
+      { path: '/room/addroomtypefloor', component: AddRoomTypeFloor },
       
       { path: '/user/webuser', component: WebUser },
       { path: '/user/role', component: Role },
 
       { path: '/order/userorder', component: UserOrder },
+
+      { path: '/comment/commentlist', component: CommentList },
     ]
     
   }

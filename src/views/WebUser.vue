@@ -57,7 +57,7 @@
     </el-card>
     <!-- 新增弹框 -->
     <el-dialog
-      title="新增角色"
+      title="新增用户"
       :visible.sync="dialogFormVisible"
       width="500px"
       center
@@ -69,6 +69,12 @@
         </el-form-item>
         <el-form-item label="密码">
           <el-input type="password" v-model="usersform.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证">
+          <el-input type="userID" v-model="usersform.userID" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input type="phone" v-model="usersform.phone" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="会员">
           <el-radio-group v-model="usersform.switch" @change="mumberFlag">
@@ -92,13 +98,19 @@
     </el-dialog>
     <!-- 弹框end -->
     <!-- 修改弹框 -->
-    <el-dialog title="修改角色" :visible.sync="changedialogFormVisible" width="500px" center>
+    <el-dialog title="修改用户" :visible.sync="changedialogFormVisible" width="500px" center>
       <el-form :model="changeusersform">
         <el-form-item label="用户名">
           <el-input v-model="changeusersform.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码">
           <el-input type="password" v-model="changeusersform.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证">
+          <el-input type="userID" v-model="changeusersform.userID" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号">
+          <el-input type="phone" v-model="changeusersform.phone" autocomplete="off"></el-input>
         </el-form-item>
          <el-form-item label="会员">
           <el-radio-group v-model="changeusersform.switch" @change="changeMumberSwitch">
@@ -107,7 +119,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="会员等级">
-          <el-select v-model="changeusersform.Level" placeholder="请选择" :disabled="changeusersform.Level? false : true">
+          <el-select v-model="changeusersform.Level" placeholder="请选择" :disabled="changeusersform.Level? false : true" @change="mumberLevelEdit">>
             <el-option label="普通会员" value="0"></el-option>
             <el-option label="高级会员" value="1"></el-option>
             <el-option label="贵宾会员" value="2"></el-option>
@@ -217,24 +229,56 @@ export default {
           resdiscount = 7.5
           break;
         case '3':
-          resname = '超级会员'
+          resname = '至尊会员'
           resdiscount = 5
           break;
       
         default:
           break;
       }
+      
       this.usersform.LevelName = resname
       this.usersform.LevelDiscount = resdiscount
-
     },
     changeMumberSwitch($event){
-      if($event == false){
+      if($event == false){//关闭会员
         this.changeusersform.Level = ''
         this.changeusersform.LevelName = ''
         this.changeusersform.LevelDiscount = ''
+      }else{//开启会员
+        this.changeusersform.Level = '0'
+        this.changeusersform.LevelName = '普通会员'
+        this.changeusersform.LevelDiscount = '9.5'
       }
-    }
+    },
+    mumberLevelEdit($event){
+      let resname = ''
+      let resdiscount = ''
+      switch ($event) {
+        case '0':
+          resname = '普通会员'
+          resdiscount = 9.5
+          break;
+        case '1':
+          resname = '高级会员'
+          resdiscount = 8.8
+          break;
+        case '2':
+          resname = '贵宾会员'
+          resdiscount = 7.5
+          break;
+        case '3':
+          resname = '至尊会员'
+          resdiscount = 5
+          break;
+      
+        default:
+          break;
+      }
+      
+      this.changeusersform.LevelName = resname
+      this.changeusersform.LevelDiscount = resdiscount
+    },
   },
   created() {
     this.getuserslist();

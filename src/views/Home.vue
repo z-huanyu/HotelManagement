@@ -4,7 +4,6 @@
       <el-header style="text-align: right; font-size: 12px" height="70px">
         <el-dropdown @command="handelCommand">
           <span class="el-dropdown-link">
-            
             欢迎回来，{{username}}
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
@@ -16,11 +15,18 @@
       </el-header>
       <el-container>
         <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
-          <el-menu router background-color="#545c64" unique-opened>
+          <el-menu
+            router
+            background-color="#545c64"
+            unique-opened
+            text-color="#fff"
+            active-text-color="#409eff"
+          >
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-message"></i>客房管理
               </template>
+              <el-menu-item index="/room/addroomtypefloor">添加房型/楼层</el-menu-item>
               <el-menu-item index="/room/roomedit">添加客房</el-menu-item>
               <el-menu-item index="/room/roomlist">客房列表</el-menu-item>
             </el-submenu>
@@ -37,6 +43,12 @@
               <el-menu-item index="/user/webuser">用户管理</el-menu-item>
               <el-menu-item index="/user/role">角色管理</el-menu-item>
             </el-submenu>
+            <el-submenu index="4">
+              <template slot="title">
+                <i class="el-icon-message"></i>评价管理
+              </template>
+              <el-menu-item index="/comment/commentlist">评价列表</el-menu-item>
+            </el-submenu>
           </el-menu>
         </el-aside>
         <el-container>
@@ -52,16 +64,16 @@
 
 <script>
 export default {
-  data(){
-    return{
+  data() {
+    return {
       username: sessionStorage.username
-    }
+    };
   },
-  methods:{
-    handelCommand(command){
-      if(command == 'offLine'){
-        sessionStorage.clear()
-        this.$router.push('/login')
+  methods: {
+    handelCommand(command) {
+      if (command == "offLine") {
+        sessionStorage.clear();
+        this.$router.push("/login");
       }
     }
   }
@@ -81,7 +93,7 @@ export default {
 .el-card {
   margin: 10px 0;
 }
-.el-dropdown-link{
+.el-dropdown-link {
   color: #409eff;
   cursor: pointer;
 }
