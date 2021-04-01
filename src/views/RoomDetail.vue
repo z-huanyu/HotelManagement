@@ -28,7 +28,12 @@
           </div>
           <div class="detailInformation">
             <div class="room_detai_middle w-100 d-flex flex-wrap">
-              <span class="detialSpan">房型：{{roomdetails.type}}</span>
+              <span
+                class="detialSpan"
+              >房型：{{roomdetails.typeID ? roomdetails.typeID['roomType'] : '数据错误'}}</span>
+              <span
+                class="detialSpan"
+              >房型：{{roomdetails.floorID ? roomdetails.floorID['roomFloor'] : '数据错误'}}</span>
               <span class="detialSpan">早餐：{{roomdetails.breakfast}}</span>
               <span class="detialSpan">网络：{{roomdetails.internet}}</span>
               <span class="detialSpan">床大小：{{roomdetails.bedsize}}</span>
@@ -42,18 +47,13 @@
           </div>
         </div>
       </div>
-      <!-- <div class="room_card">
-            <el-alert
-              title="带辅助性文字介绍"
-              type="success"
-              description="这是一句绕口令：黑灰化肥会挥发发灰黑化肥挥发；灰黑化肥会挥发发黑灰化肥发挥。 黑灰化肥会挥发发灰黑化肥黑灰挥发化为灰……"
-            ></el-alert>
-            <img class="img_bottom" src="../assets/images/room6.jpg" alt />
-      </div>-->
       <el-tabs type="border-card">
         <el-tab-pane label="房间预订"></el-tab-pane>
         <el-tab-pane label="位置信息"></el-tab-pane>
-        <el-tab-pane label="酒店概况">酒店信息</el-tab-pane>
+        <el-tab-pane label="酒店概况">
+          酒店简介：
+          维也纳酒店（宝安新安万达广场店）位于宝安区中心地带，地处宝安区新安街道自由路与上川路交汇处137号，地处深圳宝安福诚万达广场对面50米，宝安商业政治文化中心，座落于美食一条街上。东行至107国道30米，西行至宝安大道300米。位于深圳地铁5号线环中线翻身地铁站附近。距离宝安国际机场仅需15分钟车程，距深圳北站仅需20分钟，宝安汽车站步行仅需7分钟左右。紧靠港湾、宝安公园，深圳湾公园、距离海岸城，蛇口口岸及前海自贸区仅15分钟车程。距离东部华侨城，沙井海上田园40分钟车程。周边配套有万达广场、港隆城、创业天虹、海雅缤纷城、壹方城、宝安区政府、宝安体育馆。周围有中国银行农业银行、建设银行等。酒店拥有客房102间，配有西餐厅。采用欧陆风情设计，装修风格经典、雅致艺术、温馨，是您休闲、购物、旅游及商务的首选之地、酒店服务周到、热情、硬件配置豪华、“深睡眠、大健康”。维也纳酒店深圳宝安新安店全体员工欢迎您的光临！特别介绍：酒店配套早餐厅、停车场、自助洗衣房、茶具、生活小用品、热毛巾
+        </el-tab-pane>
         <el-tab-pane label="评价">
           <!-- 总评论 -->
           <div class="generalComment d-flex jc-around ai-center">
@@ -127,7 +127,7 @@
       </el-tabs>
       <!-- 订单弹框 -->
       <el-dialog title="预定订单" :visible.sync="dialogVisible">
-        <el-form :model="room_order" label-width="120px">
+        <el-form :model="room_order" label-width="130px">
           <el-form-item label="入住日期">
             <el-date-picker
               v-model="room_order.checkin_date"
@@ -141,7 +141,7 @@
           <el-form-item label="入住人姓名">
             <el-input v-model="room_order.username"></el-input>
           </el-form-item>
-          <el-form-item label="身份证号码">
+          <el-form-item label="入住人身份证号码">
             <el-input v-model="room_order.userID"></el-input>
           </el-form-item>
           <el-form-item label="入住人手机号">
@@ -161,8 +161,20 @@
           <el-form-item label="备注">
             <el-input v-model="room_order.remarks"></el-input>
           </el-form-item>
-          <el-form-item label="应付金额" label-width="600px">
-            <span style="color:#f77500; font-size:20px;">¥{{room_order.room.prices}}</span>
+          <el-form-item label="房费总计：">
+            <el-col :span="6">
+              <span>￥{{roomdetails.prices}}</span>
+            </el-col>
+            <el-col :span="10">
+              <span>优惠金额({{userInformation.LevelName}})：</span>
+              <span>￥{{paidDiscountfn()}}</span>
+            </el-col>
+            <el-col :span="8">
+              <span>实际应付：</span>
+              <span
+                class="text-yellow fs-xxl"
+              >¥{{paidfn()}}</span>
+            </el-col>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -178,16 +190,19 @@
 export default {
   data() {
     return {
+      userInformation: {}, //个人信息
       id: "",
       roomdetails: {},
 
       orderlist_number: [],
       dialogVisible: false,
       room_order: {
-        room: {}, //要预定的房间信息
+        roomID: '', //要预定的房间id
         order_time: this.getNowFormatDate(), //全局挂载的函数，自定义获取当前时间
-        webUser: sessionStorage.username, //获取缓存中的用户名
-        status: "待入住"
+        webUserID: sessionStorage.webUserID, //获取缓存中的用户名
+        paid : '',
+        discountPaid : '',
+        status: "待付款"
       },
       pickerOptions: {
         //日期选择限制对象，这里限制只能选择今天以及今后的日期
@@ -209,30 +224,30 @@ export default {
     async getroomdetails() {
       const res = await this.$http.get(`/roomdetails/${this.id}`);
       this.roomdetails = res.data;
-      this.commentList = res.data.comment;
-      res.data.comment.length>0 && this.getFinalComment()//当前房间的评价条数大于0，再去统计房间总评价分数
+      this.commentList = res.data.commentID;
+      res.data.commentID && this.getFinalComment(); //当前房间的评价条数大于0，再去统计房间总评价分数
     },
 
-    flag(number) {
-      //判断是否满房
-      for (let item of this.orderlist_number) {
-        if (item === number) {
-          return true;
-        }
-      }
-    },
     async submit_form() {
       //提交订单
       const res = await this.$http.post("roomorder", this.room_order); // eslint-disable-line no-unused-vars
+      await this.$http.put(`changeroomstatus/${this.roomdetails._id}`,{status:'待入住'})
       this.dialogVisible = false;
       this.$message({ type: "success", message: "预定成功" });
       this.$router.push("/room");
     },
     open() {
       //打开弹框
-      this.dialogVisible = true;
-      this.room_order = Object.assign({}, this.room_order);
-      this.room_order.room = this.roomdetails;
+      if (!sessionStorage.username) {
+        this.$router.push("/login");
+        this.$message({ type: "error", message: "请先登录" });
+      } else {
+        this.dialogVisible = true;
+        this.room_order = Object.assign({}, this.room_order);
+        this.room_order.roomID = this.roomdetails._id;
+        this.room_order.paid = (this.roomdetails.prices*this.userInformation.LevelDiscount*0.1).toFixed(2)
+        this.room_order.discountPaid = (this.roomdetails.prices-this.roomdetails.prices*this.userInformation.LevelDiscount*0.1).toFixed(2)
+      }
     },
 
     changeBigImage(e) {
@@ -267,9 +282,23 @@ export default {
           this.serviceFinalValue) /
         4
       ).toFixed(1);
-    }
+    },
+    async getUserInformation() {
+      //获取用户信息判断是否会员
+      const res = await this.$http.post("getuserinformation", {
+        username: sessionStorage.username
+      });
+      this.userInformation = res.data[0];
+    },
+    paidDiscountfn(){
+      return this.userInformation.LevelDiscount ? (this.roomdetails.prices-this.roomdetails.prices*this.userInformation.LevelDiscount*0.1).toFixed(2) : 0
+    },
+    paidfn(){
+      return this.userInformation.LevelDiscount ? (this.roomdetails.prices*this.userInformation.LevelDiscount*0.1).toFixed(2) : this.roomdetails.prices
+    },
   },
   created() {
+    sessionStorage.username && this.getUserInformation();
     this.id = this.$route.params.id; //接收路由router传值params,也可以利用props接收
     this.id && this.getroomdetails();
   },

@@ -6,7 +6,7 @@
     <div class="nav_middle d-flex jc-around ai-center">
       <router-link class="nav_a fs-xl" to="/">首页</router-link>
       <router-link class="nav_a fs-xl" to="/room">预订房间</router-link>
-      <router-link class="nav_a fs-xl" to="/room">成为会员</router-link>
+      <router-link class="nav_a fs-xl" to="/member">成为会员</router-link>
       <router-link class="nav_a fs-xl" to="/room">活动中心</router-link>
       <router-link class="nav_a fs-xl" to="/room">合作伙伴</router-link>
       <router-link class="nav_a fs-xl" to="/room">更多</router-link>

@@ -48,7 +48,7 @@ export default {
       comments: {
         commentDate: this.getNowFormatDate(),
         commentUsername: sessionStorage.username,
-        room: '',
+        roomID: '',
         generalComment: '',
       },
     };
@@ -63,7 +63,7 @@ export default {
     },
     async getcommentRoom() {//根据传值id查询要评论的房间
       const res = await this.$http.get(`/getcommentroom/${this.$route.params.id}`)
-      this.comments.room = res.data.room._id
+      this.comments.roomID = res.data.roomID
     },
 
   },

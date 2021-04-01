@@ -67,13 +67,13 @@
               <img ref="bigImage0" class="w-100 h-100 discount_img" :src="i.cover" alt />
             </div>
             <div class="ml-5">
-              <p class="fs-xxxl">{{i.number}}</p>
+              <p class="fs-xxxl">{{i.number}}号房</p>
               <p class="fs-xl text-yellow">
                 ￥
                 <span class="fs-xxxl text-yellow">{{i.prices}}</span>
               </p>
-              <p class="fs-xxl text-gray">{{i.type}}</p>
-              <p class="fs-xl text-gray">{{i.floor}}</p>
+              <p class="fs-xxl text-gray">{{i.typeID.roomType}}</p>
+              <p class="fs-xl text-gray">{{i.floorID.roomFloor}}</p>
               <div @click="changeBigImage0" class="d-flex py-5">
                 <div>
                   <img class="little_img my-3 mx-1" :src="i.cover" alt />
@@ -108,25 +108,25 @@
               <img class="w-100 h-100 discount_img" :src="i.cover" alt ref="bigImage" />
             </div>
             <div class="ml-5">
-              <p class="fs-xxxl">{{i.number}}</p>
+              <p class="fs-xxxl">{{i.number}}号房</p>
               <p class="fs-xl text-yellow">
                 ￥
                 <span class="fs-xxxl text-yellow">{{i.prices}}</span>
               </p>
-              <p class="fs-xxl text-gray">{{i.type}}</p>
-              <p class="fs-xl text-gray">{{i.floor}}</p>
+              <p class="fs-xxl text-gray">{{i.typeID.roomType}}</p>
+              <p class="fs-xl text-gray">{{i.floorID.roomFloor}}</p>
               <div @click="changeBigImage" class="d-flex py-5">
                 <div>
-                  <img class="little_img my-3 mx-1" :src="i.cover" alt/>
+                  <img class="little_img my-3 mx-1" :src="i.cover" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" :src="i.img1" alt/>
+                  <img class="little_img my-3 mx-1" :src="i.img1" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" :src="i.img2" alt/>
+                  <img class="little_img my-3 mx-1" :src="i.img2" alt />
                 </div>
                 <div>
-                  <img class="little_img my-3 mx-1" :src="i.img3" alt/>
+                  <img class="little_img my-3 mx-1" :src="i.img3" alt />
                 </div>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default {
         // Some Swiper option/callback...
       },
       memberRoomList: [],
-      discountRoomList: [],
+      discountRoomList: []
     };
   },
   methods: {
@@ -171,22 +171,21 @@ export default {
       this.$router.go(0);
     },
     async getRoomList() {
-      const res = await this.$http.post("roomlist", {
-        type: { $in: ["会员专享房", "限时特惠房"] }
+      const res = await this.$http.post("mainroomlist", {
+        data:["会员专享房", "限时特惠房"]
       });
-      this.memberRoomList = res.data.filter(item => item.type == "会员专享房");
+      this.memberRoomList = res.data.filter(item => item.name == "会员专享房" && item.status == '空闲' && item.switch == 1);
       this.discountRoomList = res.data.filter(
-        item => item.type == "限时特惠房"
+        item => item.name == "限时特惠房" && item.status == '空闲' && item.switch == 1
       );
-      
     },
-    changeBigImage(e) {//点击小图片切换主图
-      this.$refs.bigImage[0].src = e.target.src
+    changeBigImage(e) {
+      //点击小图片切换主图
+      this.$refs.bigImage[0].src = e.target.src;
     },
-    changeBigImage0(e){
-      this.$refs.bigImage0[0].src = e.target.src
+    changeBigImage0(e) {
+      this.$refs.bigImage0[0].src = e.target.src;
     }
-    
   },
   created() {
     this.username = sessionStorage.username;
@@ -195,9 +194,7 @@ export default {
   mounted() {
     sessionStorage.token && this.loginChange();
   },
-  watch:{
-
-  }
+  watch: {}
   // computed: {
   //   swiper() {
   //     return this.$refs.mySwiper.$swiper;
@@ -330,7 +327,7 @@ header {
   font-weight: bold;
   color: #ffffff;
 }
-.bg{
+.bg {
   background-color: #fff;
 }
 </style>

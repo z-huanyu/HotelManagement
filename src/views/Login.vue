@@ -27,10 +27,11 @@ export default {
     };
   },
   methods: {
-    async send_loginForm(username) {
+    async send_loginForm() {
       const res = await this.$http.post("login", this.form_item);
-      sessionStorage.token = res.data; //存储token
-      sessionStorage.username = username;
+      sessionStorage.token = res.data.token; //存储token
+      sessionStorage.username = res.data.userInformation.username;
+      sessionStorage.webUserID = res.data.userInformation._id
       this.$message({ type: "success", message: "登录成功" });
       this.$router.push("/");
     }

@@ -6,7 +6,14 @@
     <div class="search d-flex ai-center">
       <el-row class="w-100" :gutter="20">
         <el-col :offset="6" :span="10">
-          <el-input placeholder="输入你需要搜索的房间类型" v-model="searchInput_val" clearable @clear="searchInputClear" @change="searchInputChange" ref="searchInputRef"></el-input>
+          <el-input
+            placeholder="输入你需要搜索的房间名称或房间号"
+            v-model="searchInput_val"
+            clearable
+            @clear="searchInputClear"
+            @change="searchInputChange"
+            ref="searchInputRef"
+          ></el-input>
         </el-col>
         <el-col :span="6">
           <el-button type="primary" @click="search_btn">搜索</el-button>
@@ -22,10 +29,10 @@
           <el-checkbox-group v-model="checkboxGroup1">
             <el-checkbox-button
               v-for="room in rooms"
-              :label="room"
-              :key="room"
+              :label="room._id"
+              :key="room._id"
               @change="roomChange(checkboxGroup1)"
-            >{{room}}</el-checkbox-button>
+            >{{room.roomType}}</el-checkbox-button>
           </el-checkbox-group>
         </div>
         <p>楼层</p>
@@ -33,10 +40,10 @@
           <el-checkbox-group v-model="checkboxGroup2">
             <el-checkbox-button
               v-for="floor in floors"
-              :label="floor"
-              :key="floor"
+              :label="floor._id"
+              :key="floor._id"
               @change="floorChange(checkboxGroup2)"
-            >{{floor}}</el-checkbox-button>
+            >{{floor.roomFloor}}</el-checkbox-button>
           </el-checkbox-group>
         </div>
       </div>
@@ -46,21 +53,26 @@
           <img class="roomimg" :src="i.cover" alt="404" />
         </div>
         <div class="roomnumber text-center">
+          <p>{{i.name}}</p>
           <p>{{i.number}}号房</p>
-          <p>{{i.type}}</p>
-          <p>{{i.floor}}</p>
+          <p>{{i.typeID.roomType}}</p>
+          <p>{{i.floorID.roomFloor}}</p>
         </div>
         <div class="roomevaluate">
-          <p><span class="text-blue">{{i.comment.length>0 ? i.comment[0].generalComment : 0 }}</span>分/5分</p>
+          <p>
+            <span
+              class="text-blue"
+            >{{commentValue(i.commentID)}}</span>分/5分
+          </p>
           <p>
             <el-rate
-                :value="commentValue(i.comment)"
-                disabled
-                score-template="{value}"
-                :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-              >></el-rate>
+              :value="commentValue(i.commentID)"
+              disabled
+              score-template="{value}"
+              :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
+            >></el-rate>
           </p>
-          <p>{{i.comment.length}}条评价</p>
+          <p>{{i.commentID ? i.commentID.length : 0}}条评价</p>
         </div>
         <div class="roomprice">
           <p class="text-yellow">
@@ -157,20 +169,18 @@
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="submit_form">提交订单</el-button>
       </div>
-    </el-dialog> -->
+    </el-dialog>-->
   </div>
 </template>
 
 <script>
-const roomsOptions = ["单人间", "双人间", "三人间"];
-const floorOptions = ["一楼", "二楼", "三楼", "四楼"];
 export default {
   data() {
     return {
       checkboxGroup1: [],
       checkboxGroup2: [],
-      rooms: roomsOptions,
-      floors: floorOptions,
+      rooms: [],
+      floors: [],
 
       searchInput_val: "", //搜索框输入的内容
 
@@ -193,21 +203,28 @@ export default {
   methods: {
     async getroomlist() {
       const res = await this.$http.get("roomlist", {
-        params: { "switch": 1 }
+        params: { switch: 1 , status:'空闲' }
       }); //查询房间列表，后端需要用query接收params
       this.roomlist = res.data;
-      console.log(this.roomlist)
+      // console.log(this.roomlist);
+    },
+    async getroomtype() {
+      const res = await this.$http.get("roomtype");
+      this.rooms = res.data;
+    },
+    async getroomfloor() {
+      const res = await this.$http.get("roomfloor");
+      this.floors = res.data;
     },
     async floorChange(checkboxGroup2) {
+      // console.log(checkboxGroup2);
       //筛选不同楼层的房间
       if (checkboxGroup2.length) {
         const res = await this.$http.post("roomlist", {
-          $or: [
-            { "floor": { $in: checkboxGroup2 } },
-            { type: { $in: this.checkboxGroup1 } }
-          ]
+          typeID: this.checkboxGroup1,
+          floorID: checkboxGroup2
         });
-        // console.log(this.checkboxGroup1);
+
         this.roomlist = res.data;
       } else {
         this.getroomlist();
@@ -215,36 +232,49 @@ export default {
     },
     async roomChange(checkboxGroup1) {
       //筛选不同房型的房间
+
       if (checkboxGroup1.length) {
         const res = await this.$http.post("roomlist", {
-          $or: [
-            { "floor": { $in: this.checkboxGroup2 } },
-            { type: { $in: checkboxGroup1 } }
-          ]
+          typeID: checkboxGroup1,
+          floorID: this.checkboxGroup2
         });
-        // console.log(this.checkboxGroup2);
+
         this.roomlist = res.data;
       } else {
         this.getroomlist();
       }
     },
-    async search_btn() {//搜索框模糊查询
-      const res = await this.$http.post("roomlist",{$or:[{type: this.searchInput_val},{"floor":this.searchInput_val},{number: this.searchInput_val}]});
-      this.roomlist = res.data
-      
+    async search_btn() {
+      //搜索框模糊查询
+      const res = await this.$http.post("roomlist", {
+        name: this.searchInput_val,
+        number: this.searchInput_val
+      });
+      this.roomlist = res.data;
     },
-    searchInputClear(){
-      this.getroomlist()
+    searchInputClear() {
+      this.getroomlist();
     },
-    searchInputChange(){//当搜索框值为空，刷新数据
-      !this.searchInput_val && this.getroomlist()
+    searchInputChange() {
+      //当搜索框值为空，刷新数据
+      !this.searchInput_val && this.getroomlist();
     },
-    commentValue(comment){
-      return comment.length>0 ? comment[0].generalComment : 0
+    commentValue(commentID) {
+      if(commentID && commentID.length>0){
+        let result = 0
+        commentID.forEach(item=>{
+          result+=item.generalComment
+        })
+        return +(result/commentID.length).toFixed(1)
+      }else{
+        return 0
+      }
     }
   },
   created() {
     this.getroomlist();
+    this.getroomfloor();
+    this.getroomtype();
   }
 };
 </script>
