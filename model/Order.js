@@ -7,11 +7,13 @@ const schema = new mongoose.Schema({
     arrivetime:{type: String},
     checkin_date:{type:Array},
     order_time:{type:String},
-    remarks:{type:String},
+    remarks:{type:String},//备注
+    paid:{type:String},//实付金额
+    discountPaid:{type:String},//优惠金额
 
-    room:{type:mongoose.SchemaTypes.ObjectId,ref:'Room'},
-    webUser:{type:String},
-    status:{type:String},
+    roomID:{type:mongoose.SchemaTypes.ObjectId,ref:'Room'},
+    webUserID:{type:mongoose.SchemaTypes.ObjectId,ref:'WebUser'},
+    status:{type:String},//订单状态
 
 
 

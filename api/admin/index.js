@@ -1,13 +1,17 @@
 module.exports = app => {
     const express = require('express')
     const User = require('../../model/User')
+    const WebUser = require('../../model/WebUser')
+    const Comment = require('../../model/Comment')
+    const Category = require('../../model/Category')
+    const Floor = require('../../model/Floor')
     const Room = require('../../model/Room')
     const Order = require('../../model/Order')
     const assert = require('http-assert')
     const jwt = require('jsonwebtoken')
     const router = express.Router({
         mergeParams: true,
-        useFindAndModify:true
+        useFindAndModify: true
     })
 
 
@@ -22,9 +26,19 @@ module.exports = app => {
     //查询资源列表接口
     router.get('/', async (req, res) => {
         const queryOptions = {}
+      
         if (req.Model.modelName === 'Order') {//modelName大写M获取不了
-            queryOptions.populate = 'room'
+            queryOptions.populate = 'roomID webUserID'
         }
+        else if (req.Model.modelName === 'Room') {
+            queryOptions.populate = 'typeID floorID'
+           
+        }
+        else if (req.Model.modelName === 'Comment') {
+            queryOptions.populate = 'roomID'
+            
+        }
+
         const model = await req.Model.find().setOptions(queryOptions)
         res.send(model)
     })
@@ -54,18 +68,38 @@ module.exports = app => {
         next()
     }, router)
 
+    //搜索查询管理员
+    app.post('/api/admin/searchuser', async (req, res) => {
+        const model = await User.find(req.body)
+        res.send(model)
+    })
+    //搜索查询用户
+    app.post('/api/admin/searchuser', async (req, res) => {
+        const model = await WebUser.find(req.body)
+        res.send(model)
+    })
+
+    //搜索查询评论
+    app.post('/api/admin/searchcomment', async (req, res) => {
+        const model = await Comment.find(req.body).populate('room')
+        res.send(model)
+    })
 
     //登录
     app.post('/api/admin/login', async (req, res) => {
         //验证用户名和密码
         const { username, password } = req.body
-        const db_username = await User.findOne({ username }).select('password')
+        const db_username = await User.findOne({ username })//.select('password')仅查询密码
         assert(db_username, 432, '用户名不存在！')
         const isvalid = require('bcryptjs').compareSync(password, db_username.password)
         assert(isvalid, 432, '密码错误!')
+
+        //判断账号的状态是否正常
+        assert(db_username.switch == 1, 433, '账号被冻结')
         //返回token
         const token = jwt.sign({ id: db_username._id }, 'csadewyudaisd')//sgin(负载，密钥)
-        res.send(token)
+        res.send({ token: token, userInformation: db_username })
+       
     })
     //上传文件接口
     const multer = require('multer')
