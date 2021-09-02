@@ -78,6 +78,7 @@
             </el-form>
           </template>
         </el-table-column>
+<<<<<<< HEAD
         <el-table-column label="用户名" width="120" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.webUserID? scope.row.webUserID.username: '无'}}</span>
@@ -91,11 +92,32 @@
         <el-table-column label="状态" width="120" align="center">
           <template slot-scope="scope">
             <el-tag :type="status_tagtype(scope.row.status)">{{scope.row.status}}</el-tag>
+=======
+        <el-table-column prop="_id" label="订单号" width="220"></el-table-column>
+        <el-table-column prop="roomID.name" label="房名称" width="100"></el-table-column>
+        <el-table-column prop="roomID.number" label="房间号" width="100"></el-table-column>
+        <el-table-column prop="username" label="用户名" width="100"></el-table-column>
+        <el-table-column prop="order_time" label="下单时间" width="180"></el-table-column>
+        <el-table-column label="状态" width="100">
+          <template slot-scope="scope">
+            <el-tag :type="status_tagtype(scope.row.status)">{{scope.row.status}}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="实付金额" width="100">
+          <template slot-scope="scope">
+            <span class="pricesColor">￥{{scope.row.paid}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="优惠金额" width="100">
+          <template slot-scope="scope">
+            <span class="pricesColor">￥{{scope.row.discountPaid}}</span>
+>>>>>>> master
           </template>
         </el-table-column>
         <el-table-column prop="createWay" label="下单方式" width="120" align="center"></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
+<<<<<<< HEAD
             <el-button
               type="info"
               size="mini"
@@ -145,6 +167,14 @@
               v-if="scope.row.status == '已入住'"
             >续费</el-button>
             <el-button size="mini" @click="ordersdelete(scope.row._id)" type="danger">删除</el-button>
+=======
+            <!-- <el-button size="mini">编辑</el-button> -->
+            <el-button size="mini" @click="checkin(scope.row)">确认入住</el-button>
+            <el-button size="mini" @click="changeroom(scope.row)">换房</el-button>
+            <el-button size="mini" @click="cleanroom(scope.row)">打扫</el-button>
+            <el-button size="mini" @click="checkoutroom(scope.row)">退房</el-button>
+            <el-button size="mini" @click="ordersdelete(scope.row._id)">删除</el-button>
+>>>>>>> master
           </template>
         </el-table-column>
       </el-table>
@@ -161,11 +191,15 @@
     </el-card>
     <!-- 换房弹框 -->
     <el-dialog title="换房操作" :visible.sync="changeroomdialogVisible">
-      <el-form :model="changeroom_order" label-width="120px">
+      <el-form :model="changeRoomForm" label-width="120px">
         <el-form-item label="选择房间">
+<<<<<<< HEAD
           <el-select v-model="changeroom_order.id">
+=======
+          <el-select v-model="changeRoomForm.number" @change="getselectID($event)">
+>>>>>>> master
             <el-option
-              v-for="item in changeroomlist"
+              v-for="item in changeRoomList"
               :key="item._id"
               :value="item._id"
               :label="item.name+'('+item.number+'号房)'"
@@ -416,6 +450,7 @@
 export default {
   data() {
     return {
+<<<<<<< HEAD
       renewForm: {
         checkinout_date: ["", ""]
       }, //续费表单
@@ -456,10 +491,14 @@ export default {
       userdetails: {},
 
       addOrderDialogVisible: false, //添加订单弹框
+=======
+      order: {}, //当前点击订单
+>>>>>>> master
       orderlist: [], //订单列表
 
       changeroomRow: {}, //当前点击的订单信息(换房)
       changeroomdialogVisible: false,
+<<<<<<< HEAD
       changeroomlist: [], //可换房间列表
       changeroom_order: {},
 
@@ -468,6 +507,10 @@ export default {
       searchInput_val: "",
       pageSize: 5, //一页多少数据
       currentPage: 1 //当前页数
+=======
+      changeRoomList: [], //可换房间列表
+      changeRoomForm: {}
+>>>>>>> master
     };
   },
   methods: {
@@ -688,12 +731,17 @@ export default {
     async getorderlist() {
       //获取订单数据
       const res = await this.$http.get("rest/orders");
+<<<<<<< HEAD
       this.orderlist = res.data.reverse();
     },
     async getuserlist() {
       //获取用户列表数据
       const res = await this.$http.get("rest/webUsers");
       this.userlist = res.data;
+=======
+      this.orderlist = res.data;
+      console.log(this.orderlist);
+>>>>>>> master
     },
     ordersdelete(id) {
       //删除订单
@@ -722,6 +770,7 @@ export default {
       this.openCheckinDialogVisible = true;
       this.CheckinForm = row;
     },
+<<<<<<< HEAD
     async checkinSubmit() {
       //确认入住
       //入住操作
@@ -749,6 +798,40 @@ export default {
       this.changeroomdialogVisible = true;
       this.changeroom_order.orderID = orderid;
       this.changeroom_order.orderRoomID = orderroomid;
+=======
+    async checkin(row) {
+      //入住操作
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "满房",
+        switch:'0'
+      });
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "已入住"
+      });
+      this.getorderlist();
+    },
+    async cleanroom(row) {
+      //入住操作
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "打扫中",
+        switch:'0'
+      });
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "打扫中"
+      });
+      this.getorderlist();
+    },
+    async changeroom(row) {
+      this.order = row;
+      const res = await this.$http.get("rest/rooms");
+      this.changeRoomList = res.data.filter(item => item.status == "空闲");
+      this.changeroomdialogVisible = true;
+      this.getorderlist();
+>>>>>>> master
     },
     async cleanroom(orderid, orderroomid) {
       //打扫房间
@@ -771,6 +854,7 @@ export default {
       this.getorderlist();
     },
     async changeroom_submit() {
+<<<<<<< HEAD
       //提交换房订单
       const res = await this.$http.get(
         `rest/rooms/${this.changeroom_order.id}`
@@ -810,9 +894,18 @@ export default {
         status: "待入住"
       }); // eslint-disable-line no-unused-vars
       this.$message({ type: "success", message: "换房成功" });
+=======
+      await this.$http.put(`rest/orders/${this.order._id}`, {
+        roomID: this.changeRoomForm.roomID
+      });
+      await this.$http.put(`rest/rooms/${this.order.roomID._id}`, {
+        status: "空闲"
+      });
+      this.getorderlist()
+>>>>>>> master
       this.changeroomdialogVisible = false;
-      this.getorderlist();
     },
+<<<<<<< HEAD
     async checkoutroom(roomid, orderid) {
       //退房操作
       await this.$http.put(`rest/rooms/${roomid}`, {
@@ -831,6 +924,22 @@ export default {
         switch: 1
       });
       await this.$http.put(`rest/orders/${orderid}`, {
+=======
+    getselectID($event) {
+      this.changeRoomForm.roomID = this.changeRoomList.filter(
+        item => item.number == $event
+      )[0]._id;
+    },
+    async checkoutroom(row) {
+      //退房操作
+      await this.$http.put(`rest/rooms/${row.roomID._id}`, {
+        // eslint-disable-line no-unused-vars
+        status: "空闲",
+        switch: '1'
+      });
+      await this.$http.put(`rest/orders/${row._id}`, {
+        // eslint-disable-line no-unused-vars
+>>>>>>> master
         status: "订单完成"
       });
       this.getorderlist();
@@ -917,6 +1026,7 @@ export default {
   margin-bottom: 0;
   width: 50%;
 }
+<<<<<<< HEAD
 .fenye {
   text-align: center;
 }
@@ -930,5 +1040,9 @@ export default {
 }
 .checkinDiv {
   text-align: center;
+=======
+.pricesColor {
+  color: #fe7f00;
+>>>>>>> master
 }
 </style>
