@@ -20,10 +20,78 @@
           </el-col>
         </el-row>
       </el-tab-pane>
-      <el-tab-pane label="待付款" name="second">待付款</el-tab-pane>
-      <el-tab-pane label="已付款" name="third">已付款</el-tab-pane>
-      <el-tab-pane label="待入住" name="fourth">待入住</el-tab-pane>
-      <el-tab-pane label="待入住" name="fifth">待入住</el-tab-pane>
+      <el-tab-pane label="待付款" name="second">
+        <el-row>
+          <el-col :span="8" v-for="i in userorder.filter(item=>item.status == '待付款')" :key="i._id">
+            <el-card :body-style="{ padding: '0px' }" shadow="hover">
+              <img :src="i.roomID.cover" class="cover" />
+              <div>
+                <p>{{i.roomID.name}}</p>
+                <p>
+                  状态：
+                  <el-tag :type="statusColor(i.status)">{{i.status}}</el-tag>
+                </p>
+                <p>{{i.order_time}}</p>
+                <el-button type="danger" @click="$router.push(`/myorderdetial/${i._id}`)">查看详情</el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="已付款" name="third">
+        <el-row>
+          <el-col :span="8" v-for="i in userorder.filter(item=>item.status == '已付款')" :key="i._id">
+            <el-card :body-style="{ padding: '0px' }" shadow="hover">
+              <img :src="i.roomID.cover" class="cover" />
+              <div>
+                <p>{{i.roomID.name}}</p>
+                <p>
+                  状态：
+                  <el-tag :type="statusColor(i.status)">{{i.status}}</el-tag>
+                </p>
+                <p>{{i.order_time}}</p>
+                <el-button type="danger" @click="$router.push(`/myorderdetial/${i._id}`)">查看详情</el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="取消的订单" name="fourth">
+        <el-row>
+          <el-col :span="8" v-for="i in userorder.filter(item=>item.status == '订单已取消')" :key="i._id">
+            <el-card :body-style="{ padding: '0px' }" shadow="hover">
+              <img :src="i.roomID.cover" class="cover" />
+              <div>
+                <p>{{i.roomID.name}}</p>
+                <p>
+                  状态：
+                  <el-tag :type="statusColor(i.status)">{{i.status}}</el-tag>
+                </p>
+                <p>{{i.order_time}}</p>
+                <el-button type="danger" @click="$router.push(`/myorderdetial/${i._id}`)">查看详情</el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
+      <el-tab-pane label="完成订单" name="fifth">
+        <el-row>
+          <el-col :span="8" v-for="i in userorder.filter(item=>item.status == '订单完成')" :key="i._id">
+            <el-card :body-style="{ padding: '0px' }" shadow="hover">
+              <img :src="i.roomID.cover" class="cover" />
+              <div>
+                <p>{{i.roomID.name}}</p>
+                <p>
+                  状态：
+                  <el-tag :type="statusColor(i.status)">{{i.status}}</el-tag>
+                </p>
+                <p>{{i.order_time}}</p>
+                <el-button type="danger" @click="$router.push(`/myorderdetial/${i._id}`)">查看详情</el-button>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -83,7 +151,7 @@ export default {
 }
 .cover {
   width: 100%;
-  height: 100%;
+  height: 185px;
 }
 .el-card {
   text-align: center;

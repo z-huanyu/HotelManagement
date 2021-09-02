@@ -11,6 +11,8 @@ import MyOrder from '../views/MyOrder.vue'
 import Comments from '../views/Comments.vue'
 import Member from '../views/Member.vue'
 import MyOrderDetial from '../views/MyOrderDetial.vue'
+import Activity from '../views/Activity.vue'
+import Partner from '../views/Partner.vue'
 
 //以下代码解决路由地址重复的报错问题
 const originalPush = VueRouter.prototype.push
@@ -28,6 +30,8 @@ const routes = [
   { path: '/roomdetail/:id', name: 'roomdetail', component: RoomDetail },
   { path: '/comments/:id', name: 'comments', component: Comments },
   { path: '/member', name: 'member', component: Member },
+  { path: '/activity', name: 'activity', component: Activity },
+  { path: '/partner', name: 'partner', component: Partner },
   {
     path: '/userinformation', name: 'userinformation', component: UserInformation,
     children: [

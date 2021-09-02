@@ -47,8 +47,17 @@
           </el-checkbox-group>
         </div>
       </div>
+
+      <p>
+        查询到
+        <span class="text-blue">{{roomlist.length}}</span> 个房间
+      </p>
       <!-- 房间列表 -->
-      <div class="roomlist_div d-flex" v-for="i in roomlist" :key="i._id">
+      <div
+        class="roomlist_div d-flex"
+        v-for="i in roomlist.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+        :key="i._id"
+      >
         <div>
           <img class="roomimg" :src="i.cover" alt="404" />
         </div>
@@ -60,9 +69,7 @@
         </div>
         <div class="roomevaluate">
           <p>
-            <span
-              class="text-blue"
-            >{{commentValue(i.commentID)}}</span>分/5分
+            <span class="text-blue">{{commentValue(i.commentID)}}</span>分/5分
           </p>
           <p>
             <el-rate
@@ -83,93 +90,18 @@
           <button class="TO_roomdetail" @click="$router.push(`/roomdetail/${i._id}`)">查看详情</button>
         </div>
       </div>
+      <!-- 分页 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-sizes="[5, 10, 15, 20]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="roomlist.length"
+        class="text-center mt-3"
+      ></el-pagination>
     </div>
-
-    <!-- 房间信息 -->
-    <!-- <div class="mx-6">
-      <el-table :data="roomlist" label-width="180px" height="650px">
-        <el-table-column prop="cover" label="封面" width="230px">
-          <template slot-scope="scope">
-            <img style="width:100px; height:80px;" :src="scope.row.cover" alt="404" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="number" label="房间号"></el-table-column>
-        <el-table-column prop="type" label="房型"></el-table-column>
-        <el-table-column prop="breakfast" label="早餐"></el-table-column>
-        <el-table-column prop="prices" label="房价"></el-table-column>
-        <el-table-column prop="details" class="details_column">
-          <template slot-scope="scope">
-            <span class="details">
-              详情
-              <div class="details_box">
-                <div class="details_triangle"></div>
-                <ul class="details_ul d-flex jc-around flex-wrap">
-                  <li class="details_li">窗户：{{scope.row.details.window}}</li>
-                  <li class="details_li">网络：{{scope.row.details.internet}}</li>
-                  <li class="details_li">房间面积：{{scope.row.details.roomsize}}</li>
-                  <li class="details_li">楼层：{{scope.row.details.floor}}</li>
-                  <li class="details_li">可入住人数：{{scope.row.details.people}}</li>
-                  <li class="details_li">床尺寸：{{scope.row.details.bedsize}}</li>
-                </ul>
-              </div>
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column>
-          <template slot-scope="scope">
-            <el-button
-              :disabled="flag(scope.row.number)"
-              @click="open(scope.row)"
-            >{{flag(scope.row.number)?'已满':'立即预定'}}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>-->
-    <!-- 订单弹框 -->
-    <!-- <el-dialog title="预定订单" :visible.sync="dialogVisible">
-      <el-form :model="room_order" label-width="120px">
-        <el-form-item label="入住日期">
-          <el-date-picker
-            v-model="room_order.checkin_date"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="入住"
-            end-placeholder="离开"
-            :picker-options="pickerOptions"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="入住人姓名">
-          <el-input v-model="room_order.username"></el-input>
-        </el-form-item>
-        <el-form-item label="身份证号码">
-          <el-input v-model="room_order.userID"></el-input>
-        </el-form-item>
-        <el-form-item label="入住人手机号">
-          <el-input v-model="room_order.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="预计到店时间">
-          <el-select v-model="room_order.arrivetime" placeholder="请选择">
-            <el-option value="14:00">14:00</el-option>
-            <el-option value="16:00">16:00</el-option>
-            <el-option value="18:00">18:00</el-option>
-            <el-option value="20:00">20:00</el-option>
-            <el-option value="21:00">21:00</el-option>
-            <el-option value="22:00">22:00</el-option>
-            <el-option value="23:00">23:00</el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="room_order.remarks"></el-input>
-        </el-form-item>
-        <el-form-item label="应付金额" label-width="600px">
-          <span style="color:#f77500; font-size:20px;">¥{{room_order.room.prices}}</span>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submit_form">提交订单</el-button>
-      </div>
-    </el-dialog>-->
+     <my-footer></my-footer>
   </div>
 </template>
 
@@ -181,7 +113,8 @@ export default {
       checkboxGroup2: [],
       rooms: [],
       floors: [],
-
+      pageSize: 5, //一页多少数据
+      currentPage: 1, //当前页数
       searchInput_val: "", //搜索框输入的内容
 
       // switch: { "switch": '1' },
@@ -201,9 +134,17 @@ export default {
     };
   },
   methods: {
+    handleSizeChange(val) {
+      //当前没有数据条数
+      this.pageSize = val
+    },
+    handleCurrentChange(val) {
+      //当前页码
+      this.currentPage = val
+    },
     async getroomlist() {
       const res = await this.$http.get("roomlist", {
-        params: { switch: 1 , status:'空闲' }
+        params: { switch: 1, status: "空闲" }
       }); //查询房间列表，后端需要用query接收params
       this.roomlist = res.data;
       // console.log(this.roomlist);
@@ -236,7 +177,8 @@ export default {
       if (checkboxGroup1.length) {
         const res = await this.$http.post("roomlist", {
           typeID: checkboxGroup1,
-          floorID: this.checkboxGroup2
+          floorID: this.checkboxGroup2,
+
         });
 
         this.roomlist = res.data;
@@ -245,12 +187,16 @@ export default {
       }
     },
     async search_btn() {
-      //搜索框模糊查询
-      const res = await this.$http.post("roomlist", {
-        name: this.searchInput_val,
-        number: this.searchInput_val
-      });
-      this.roomlist = res.data;
+      //搜索框查询
+      if (this.searchInput_val != "") {
+        const res = await this.$http.post("roomlist", {
+          name: this.searchInput_val,
+          number: this.searchInput_val
+        });
+        this.roomlist = res.data;
+      } else {
+        this.$message({ type: "warning", message: "搜索内容不能为空！" });
+      }
     },
     searchInputClear() {
       this.getroomlist();
@@ -260,14 +206,14 @@ export default {
       !this.searchInput_val && this.getroomlist();
     },
     commentValue(commentID) {
-      if(commentID && commentID.length>0){
-        let result = 0
-        commentID.forEach(item=>{
-          result+=item.generalComment
-        })
-        return +(result/commentID.length).toFixed(1)
-      }else{
-        return 0
+      if (commentID && commentID.length > 0) {
+        let result = 0;
+        commentID.forEach(item => {
+          result += item.generalComment;
+        });
+        return +(result / commentID.length).toFixed(1);
+      } else {
+        return 0;
       }
     }
   },

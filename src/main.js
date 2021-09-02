@@ -19,6 +19,13 @@ Vue.component('my-footer', Footer)//注册全局组件,页尾
 import Nav from './components/Nav.vue'
 Vue.component('my-nav', Nav)//导航
 
+import BaiduMap from 'vue-baidu-map'
+
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: '3GtLTebc7yg9Scs6DwA7ZUbekfWw2iDA'
+})
+
 Vue.prototype.getNowFormatDate = function () {//获取当前时间
   let date = new Date();
   let seperator1 = "-";

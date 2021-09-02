@@ -1,15 +1,15 @@
 <template>
   <div class="d-flex nav">
     <div class="nav_left text-center">
-      <span class="hotel">&#xe60e;雅馨酒店</span>
+      <span class="hotel">&#xe60e;酒店</span>
     </div>
     <div class="nav_middle d-flex jc-around ai-center">
       <router-link class="nav_a fs-xl" to="/">首页</router-link>
       <router-link class="nav_a fs-xl" to="/room">预订房间</router-link>
       <router-link class="nav_a fs-xl" to="/member">成为会员</router-link>
-      <router-link class="nav_a fs-xl" to="/room">活动中心</router-link>
-      <router-link class="nav_a fs-xl" to="/room">合作伙伴</router-link>
-      <router-link class="nav_a fs-xl" to="/room">更多</router-link>
+      <router-link class="nav_a fs-xl" to="/activity">活动中心</router-link>
+      <router-link class="nav_a fs-xl" to="/Partner">合作伙伴</router-link>
+      <!-- <router-link class="nav_a fs-xl" to="/room">更多</router-link> -->
     </div>
     <div class="nav_right d-flex ai-center" ref="login_registerRef">
       <router-link class="login_register" to="/login">登录</router-link>

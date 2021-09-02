@@ -23,7 +23,10 @@
 export default {
   data() {
     return {
-      form_item: {}
+      form_item: {
+        username:'游客',
+        password:'123'
+      }
     };
   },
   methods: {

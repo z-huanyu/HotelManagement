@@ -25,15 +25,15 @@
       </div>
       <div class="d-flex ai-center px-7 nav fs-xl jc-between">
         <div class="mr-5 text-white">
-          <span class="hotel">&#xe60e;雅馨酒店</span>
+          <span class="hotel">&#xe60e;酒店</span>
         </div>
         <div class="nav_right d-flex ai-center jc-between">
           <router-link class="text-white nav_a" to="/">首页</router-link>
           <router-link class="text-white nav_a" to="/room">预订房间</router-link>
-          <router-link class="text-white nav_a" to="/room">成为会员</router-link>
-          <router-link class="text-white nav_a" to="/room">活动中心</router-link>
-          <router-link class="text-white nav_a" to="/room">合作伙伴</router-link>
-          <router-link class="text-white nav_a" to="/room">更多</router-link>
+          <router-link class="text-white nav_a" to="/member">成为会员</router-link>
+          <router-link class="text-white nav_a" to="/activity">活动中心</router-link>
+          <router-link class="text-white nav_a" to="/partner">合作伙伴</router-link>
+          <!-- <router-link class="text-white nav_a" to="/room">更多</router-link> -->
         </div>
       </div>
     </header>
@@ -101,8 +101,8 @@
     <div class="division"></div>
     <div class="mt-5 mx-6">
       <ul>
-        <p class="fs-xxxl text-center">会员专享房</p>
-        <li class="discount" v-for="i in memberRoomList" :key="i._id">
+        <p class="fs-xxxl text-center">房间推荐</p>
+        <li class="discount" v-for="i in recommendRoomList" :key="i._id">
           <div class="d-flex">
             <div class="discount_div">
               <img class="w-100 h-100 discount_img" :src="i.cover" alt ref="bigImage" />
@@ -157,7 +157,7 @@ export default {
         loop: true //循环
         // Some Swiper option/callback...
       },
-      memberRoomList: [],
+      recommendRoomList: [],
       discountRoomList: []
     };
   },
@@ -171,10 +171,8 @@ export default {
       this.$router.go(0);
     },
     async getRoomList() {
-      const res = await this.$http.post("mainroomlist", {
-        data:["会员专享房", "限时特惠房"]
-      });
-      this.memberRoomList = res.data.filter(item => item.name == "会员专享房" && item.status == '空闲' && item.switch == 1);
+      const res = await this.$http.get("roomlist");
+      this.recommendRoomList = res.data.filter(item => item.recommend == true && item.status == '空闲' && item.switch == 1);//推荐房间列表
       this.discountRoomList = res.data.filter(
         item => item.name == "限时特惠房" && item.status == '空闲' && item.switch == 1
       );

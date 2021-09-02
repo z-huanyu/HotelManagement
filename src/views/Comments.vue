@@ -48,28 +48,49 @@ export default {
       comments: {
         commentDate: this.getNowFormatDate(),
         commentUsername: sessionStorage.username,
-        roomID: '',
-        generalComment: '',
-      },
+        roomID: "",
+        generalComment: ""
+      }
     };
   },
   methods: {
     async formSubmit() {
-      let totolCount = (this.comments.service+this.comments.environment+this.comments.equipment+this.comments.comfortable)/4
-      this.comments.generalComment = parseFloat(totolCount).toFixed(1).toString()
-      await this.$http.post('/comment',this.comments)
-      this.$message({type:'success',message:'发表评论成功'})
-      this.$router.push('/myorder')
+      if (
+        this.comments.comfortable == undefined ||
+        this.comments.commentText == undefined ||
+        this.comments.environment == undefined ||
+        this.comments.equipment == undefined ||
+        this.comments.service == undefined
+      ) {
+        this.$message({
+          type: "warning",
+          message: "请选择点评星级和填写点评内容"
+        });
+      } else {
+        let totolCount =
+          (this.comments.service +
+            this.comments.environment +
+            this.comments.equipment +
+            this.comments.comfortable) /
+          4;
+        this.comments.generalComment = parseFloat(totolCount)
+          .toFixed(1)
+          .toString();
+        await this.$http.post("/comment", this.comments);
+        this.$message({ type: "success", message: "发表评论成功" });
+        this.$router.push("/myorder");
+      }
     },
-    async getcommentRoom() {//根据传值id查询要评论的房间
-      const res = await this.$http.get(`/getcommentroom/${this.$route.params.id}`)
-      this.comments.roomID = res.data.roomID
-    },
-
+    async getcommentRoom() {
+      //根据传值id查询要评论的房间
+      const res = await this.$http.get(
+        `/getcommentroom/${this.$route.params.id}`
+      );
+      this.comments.roomID = res.data.roomID;
+    }
   },
   created() {
-      this.getcommentRoom()
-    
+    this.getcommentRoom();
   }
 };
 </script>
