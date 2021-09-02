@@ -9,6 +9,7 @@ import Role from '../views/Role.vue'
 import UserOrder from '../views/UserOrder.vue'
 import AddRoomTypeFloor from '../views/AddRoomTypeFloor.vue'
 import CommentList from '../views/CommentList.vue'
+import Statistics from '../views/Statistics.vue'
 
 Vue.use(VueRouter)
 
@@ -23,6 +24,7 @@ const routes = [
     name: 'Home',
     component: Home,
     children: [
+      { path: '/', redirect:'/order/userorder'},
       { path: '/room/roomedit', component: RoomEdit},
       { path: '/room/roomedit/edit/:id', component: RoomEdit ,props: true},
       { path: '/room/roomlist', component: RoomList },
@@ -34,6 +36,8 @@ const routes = [
       { path: '/order/userorder', component: UserOrder },
 
       { path: '/comment/commentlist', component: CommentList },
+
+      { path: '/statistics', component: Statistics },
     ]
     
   }

@@ -6,7 +6,13 @@
       <el-breadcrumb-item>{{id ? '编辑' : '新建'}}房间</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card style="width:100%">
-      <el-form label-width="100px" @submit.native.prevent="save" size="small" :inline="true">
+      <el-form
+        label-width="100px"
+        @submit.native.prevent="save"
+        size="small"
+        :inline="true"
+      
+      >
         <el-divider>基础信息</el-divider>
         <el-row>
           <el-form-item label="房间名称">
@@ -15,7 +21,7 @@
           <el-form-item label="房间号">
             <el-input v-model="room.number"></el-input>
           </el-form-item>
-            <el-form-item label="房间价格">
+          <el-form-item label="房间价格">
             <el-input v-model="room.prices"></el-input>
           </el-form-item>
           <el-form-item label="房间类型">
@@ -28,7 +34,6 @@
               ></el-option>
             </el-select>
           </el-form-item>
-        
         </el-row>
         <el-row>
           <el-form-item label="房间封面">
@@ -75,7 +80,7 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
-            <el-form-item label="楼层">
+          <el-form-item label="楼层">
             <el-select v-model="room.floorID" placeholder="请选择楼层">
               <el-option
                 v-for="item in roomFloor"
@@ -128,6 +133,27 @@
               <el-radio label="两人"></el-radio>
               <el-radio label="三人"></el-radio>
               <el-radio label="四人"></el-radio>
+              <el-radio label="五人"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="房间状态">
+            <el-radio-group v-model="room.status">
+              <el-radio label="空闲"></el-radio>
+              <el-radio label="满房"></el-radio>
+              <el-radio label="待入住"></el-radio>
+              <el-radio label="打扫中"></el-radio>
+              <el-radio label="等待打扫"></el-radio>
+              <el-radio label="打扫完成"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="是否推荐">
+            <el-radio-group v-model="room.recommend">
+              <el-radio :label="true">推荐</el-radio>
+              <el-radio :label="false">不推荐</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-row>
@@ -148,13 +174,12 @@ export default {
   },
   data() {
     return {
+      
       room: {
         cover: "", //解决上传图片不显示
         img1: "",
         img2: "",
-        img3: "",
-        status: "空闲",
-        switch: 1
+        img3: ""
       },
       roomType: [], //房间类型
       roomFloor: [] //楼层
@@ -162,6 +187,7 @@ export default {
   },
   methods: {
     async save() {
+      //新增房间
       let res; // eslint-disable-line no-unused-vars
       if (this.id) {
         res = await this.$http.put(`rest/rooms/${this.id}`, this.room);
@@ -171,8 +197,8 @@ export default {
         res = await this.$http.post("rest/rooms", this.room);
         this.$message({ type: "success", message: "添加房间成功" }); //后端得返回数据，不然会一直等待后端响应，阻塞弹窗
         this.$router.push("/room/roomlist");
+        console.log(this.room);
       }
-     
     },
     cover_afterUpload(res) {
       //上传图片成功后把图片url地址赋值

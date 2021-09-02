@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card header="请先登录">
+    <el-card header="酒店后台管理系统">
       <el-form label-position="left" label-width="80px" @submit.native.prevent="login">
           <el-form-item label="用户名">
             <el-input clearable v-model="login_form.username" type="text" prefix-icon="el-icon-user-solid"></el-input>
@@ -20,7 +20,10 @@
 export default {
   data() {
     return {
-      login_form:{},
+      login_form:{
+        username:'admin',
+        password:'123'
+      },
     };
   },
   methods:{
@@ -43,6 +46,6 @@ export default {
   margin: 5rem auto;
 }
 body{
-  background-color: #e7e7e7;
+  background-color: #c8c8c8;
 }
 </style>

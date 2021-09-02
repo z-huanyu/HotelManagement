@@ -28,32 +28,47 @@
       </el-row>
       <el-divider>用户列表</el-divider>
       <!-- 表格 -->
-      <el-table :data="userslist" style="width: 100%">
-        <el-table-column prop="username" label="用户名" width="180"></el-table-column>
-        <el-table-column prop="userID" label="身份证" width="180"></el-table-column>
-        <el-table-column prop="phone" label="电话" width="180"></el-table-column>
-        <el-table-column label="会员" width="180">
+      <el-table
+        :data="userslist.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+        style="width: 100%"
+        border
+        :header-cell-style="{'text-align':'center'}"
+      >
+        <el-table-column prop="username" label="用户名" width="180" align="center"></el-table-column>
+        <el-table-column prop="userID" label="身份证" width="180" align="center"></el-table-column>
+        <el-table-column prop="phone" label="电话" width="180" align="center"></el-table-column>
+        <el-table-column label="会员" width="180" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.switch ? '是':'否'}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="会员等级" width="180">
+        <el-table-column label="会员等级" width="180" align="center">
           <template slot-scope="scope">
             <el-tag>{{scope.row.LevelName? scope.row.LevelName : '无'}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="创建者" width="180">
+        <el-table-column label="创建者" width="180" align="center">
           <template slot-scope="scope">
             <span>{{scope.row.editer ? scope.row.editer : '线上注册'}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button size="mini" @click="changeUser(scope.row)">修改</el-button>
-            <el-button size="mini" @click="usersdelete(scope.row._id)">删除</el-button>
+            <el-button size="mini" @click="usersdelete(scope.row._id)" type="danger">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-sizes="[5, 10, 15, 20]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="userslist.length"
+        class="fenye"
+      ></el-pagination>
     </el-card>
     <!-- 新增弹框 -->
     <el-dialog
@@ -83,7 +98,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="会员等级">
-          <el-select v-model="usersform.Level" placeholder="请选择" :disabled="flag" @change="mumberLevelChange">
+          <el-select
+            v-model="usersform.Level"
+            placeholder="请选择"
+            :disabled="flag"
+            @change="mumberLevelChange"
+          >
             <el-option label="普通会员" value="0"></el-option>
             <el-option label="高级会员" value="1"></el-option>
             <el-option label="贵宾会员" value="2"></el-option>
@@ -112,14 +132,19 @@
         <el-form-item label="手机号">
           <el-input type="phone" v-model="changeusersform.phone" autocomplete="off"></el-input>
         </el-form-item>
-         <el-form-item label="会员">
+        <el-form-item label="会员">
           <el-radio-group v-model="changeusersform.switch" @change="changeMumberSwitch">
             <el-radio :label="true">是</el-radio>
             <el-radio :label="false">否</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="会员等级">
-          <el-select v-model="changeusersform.Level" placeholder="请选择" :disabled="changeusersform.Level? false : true" @change="mumberLevelEdit">>
+          <el-select
+            v-model="changeusersform.Level"
+            placeholder="请选择"
+            :disabled="changeusersform.Level!=''? false : true"
+            @change="mumberLevelEdit"
+          >
             <el-option label="普通会员" value="0"></el-option>
             <el-option label="高级会员" value="1"></el-option>
             <el-option label="贵宾会员" value="2"></el-option>
@@ -140,6 +165,8 @@
 export default {
   data() {
     return {
+      pageSize: 5, //一页多少数据
+      currentPage: 1, //当前页数
       userslist: [],
       usersform: {
         editer: sessionStorage.username,
@@ -149,40 +176,62 @@ export default {
       searchInput_val: "",
       changeusersform: {},
       changedialogFormVisible: false,
-      flag:true,//控制会员选择框disabled
+      flag: true //控制会员选择框disabled
     };
   },
   methods: {
+    handleSizeChange(val) {
+      //当前没有数据条数
+      this.pageSize = val;
+    },
+    handleCurrentChange(val) {
+      //当前页码
+      this.currentPage = val;
+    },
     async getuserslist() {
       const res = await this.$http.get("rest/webUsers"); // eslint-disable-line no-unused-vars
       this.userslist = res.data;
     },
     async usersdelete(id) {
       const res = await this.$http.delete(`rest/webUsers/${id}`); // eslint-disable-line no-unused-vars
-      this.$message({ type: "success", message: "删除成功" }); //后端得返回数据，不然会一直等待后端响应，阻塞弹窗
+      this.$message({ type: "success", message: "删除成功" });
       this.getuserslist();
     },
     async AddUsers() {
-      
-      const res = await this.$http.post("rest/webUsers", this.usersform); // eslint-disable-line no-unused-vars
-      this.dialogFormVisible = false;
-      this.$message({ type: "success", message: "添加用户成功" }); //后端得返回数据，不然会一直等待后端响应，阻塞弹窗
-      this.getuserslist()
+      console.log(this.usersform)
+      if (
+        //验证表单
+        this.usersform.username == undefined ||
+        this.usersform.password == undefined ||
+        this.usersform.phone == undefined||
+        this.usersform.userID == undefined
+      ) {
+        this.$message({ type: "warning", message: "信息填写不完整" });
+      } else {
+        const res = await this.$http.post("rest/webUsers", this.usersform); // eslint-disable-line no-unused-vars
+        this.dialogFormVisible = false;
+        this.$message({ type: "success", message: "添加用户成功" });
+        this.getuserslist();
+      }
     },
     searchInputClear() {
       this.getuserslist();
     },
     searchInputChange() {
       //当搜索框值为空，刷新数据
-      !this.searchInput_val && this.getroomlist();
+      !this.searchInput_val && this.getuserslist();
     },
     async search_btn() {
       //搜索框模糊查询
-      const res = await this.$http.post("roomlist", {
-        name: this.searchInput_val,
-        number: this.searchInput_val
+      const res = await this.$http.post("searchwebuser", {
+        $or: [
+          { username: this.searchInput_val.trim() },
+          { LevelName: this.searchInput_val.trim() },
+          { userID: this.searchInput_val.trim() },
+          { phone: parseInt(this.searchInput_val.trim()) }
+        ]
       });
-      this.roomlist = res.data;
+      this.userslist = res.data;
     },
     async userSwitchChange($event, id) {
       await this.$http.put(`rest/webUsers/${id}`, {
@@ -199,7 +248,7 @@ export default {
         this.changeusersform
       ); // eslint-disable-line no-unused-vars
       this.changedialogFormVisible = false;
-      this.$message({ type: "success", message: "修改用户成功" }); //后端得返回数据，不然会一直等待后端响应，阻塞弹窗
+      this.$message({ type: "success", message: "修改用户成功" });
     },
     cleardialog() {
       this.usersform = {
@@ -207,78 +256,79 @@ export default {
       };
     },
     mumberFlag($event) {
-      this.flag = !$event
-      if(!$event){
-        this.usersform.Level = ''
+      this.flag = !$event;
+      if (!$event) {
+        this.usersform.Level = "";
       }
     },
-    mumberLevelChange($event){
-      let resname = ''
-      let resdiscount = ''
+    mumberLevelChange($event) {
+      let resname = "";
+      let resdiscount = 0;
       switch ($event) {
-        case '0':
-          resname = '普通会员'
-          resdiscount = 9.5
+        case "0":
+          resname = "普通会员";
+          resdiscount = 9.5;
           break;
-        case '1':
-          resname = '高级会员'
-          resdiscount = 8.8
+        case "1":
+          resname = "高级会员";
+          resdiscount = 8.8;
           break;
-        case '2':
-          resname = '贵宾会员'
-          resdiscount = 7.5
+        case "2":
+          resname = "贵宾会员";
+          resdiscount = 7.5;
           break;
-        case '3':
-          resname = '至尊会员'
-          resdiscount = 5
+        case "3":
+          resname = "至尊会员";
+          resdiscount = 5;
           break;
-      
+
         default:
           break;
       }
-      
-      this.usersform.LevelName = resname
-      this.usersform.LevelDiscount = resdiscount
+      this.usersform.LevelName = resname;
+      this.usersform.LevelDiscount = resdiscount;
     },
-    changeMumberSwitch($event){
-      if($event == false){//关闭会员
-        this.changeusersform.Level = ''
-        this.changeusersform.LevelName = ''
-        this.changeusersform.LevelDiscount = ''
-      }else{//开启会员
-        this.changeusersform.Level = '0'
-        this.changeusersform.LevelName = '普通会员'
-        this.changeusersform.LevelDiscount = '9.5'
+    changeMumberSwitch($event) {
+      if ($event == false) {
+        //关闭会员
+        this.changeusersform.Level = "";
+        this.changeusersform.LevelName = "";
+        this.changeusersform.LevelDiscount = 0;
+      } else {
+        //开启会员
+        this.changeusersform.Level = "0";
+        this.changeusersform.LevelName = "普通会员";
+        this.changeusersform.LevelDiscount = 9.5;
       }
     },
-    mumberLevelEdit($event){
-      let resname = ''
-      let resdiscount = ''
+    mumberLevelEdit($event) {
+      let resname = "";
+      let resdiscount = "";
       switch ($event) {
-        case '0':
-          resname = '普通会员'
-          resdiscount = 9.5
+        case "0":
+          resname = "普通会员";
+          resdiscount = 9.5;
           break;
-        case '1':
-          resname = '高级会员'
-          resdiscount = 8.8
+        case "1":
+          resname = "高级会员";
+          resdiscount = 8.8;
           break;
-        case '2':
-          resname = '贵宾会员'
-          resdiscount = 7.5
+        case "2":
+          resname = "贵宾会员";
+          resdiscount = 7.5;
           break;
-        case '3':
-          resname = '至尊会员'
-          resdiscount = 5
+        case "3":
+          resname = "至尊会员";
+          resdiscount = 5;
           break;
-      
+
         default:
           break;
       }
-      
-      this.changeusersform.LevelName = resname
-      this.changeusersform.LevelDiscount = resdiscount
-    },
+
+      this.changeusersform.LevelName = resname;
+      this.changeusersform.LevelDiscount = resdiscount;
+    }
   },
   created() {
     this.getuserslist();
@@ -290,5 +340,8 @@ export default {
 .UsersCard {
   width: 100%;
   height: 100%;
+}
+.fenye {
+  text-align: center;
 }
 </style>
